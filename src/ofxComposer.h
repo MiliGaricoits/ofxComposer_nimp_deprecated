@@ -58,7 +58,7 @@ private:
     bool    connect( int _fromID, int _toID, int _nTexture );
     
     //nico
-    void    updateScrollBar();
+    //void    updateScrollBar();
 
 #ifdef USE_OFXGLEDITOR
 	ofxGLEditor editor;

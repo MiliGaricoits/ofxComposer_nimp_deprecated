@@ -1241,15 +1241,8 @@ bool ofxPatch::loadSettings( int _nTag, string _configFile){
             } else if( type == "ofxGLEditor" ){
                 title->setTitle(ofToString(nId) + ":" + type );
                 loaded = true;
-            } else if (( type == "ofImage") || ( type == "ofTexture")){
+            } else if (( type == "ofImage") || ( type == "ofTexture") || (type == "ofVideoPlayer")){
                 loaded = loadFile( path );
-            } else if (type == "ofVideoPlayer") {
-                loaded = loadFile( path );
-                
-                //mili
-                //videoInterface = new nodeVideoInterface(&box, &nId);
-                //ofAddListener( videoInterface->_stop , this, &ofxPatch::_stopVideo);
-                //ofAddListener( videoInterface->_play , this, &ofxPatch::_playVideo);
             } else {
                 title->setTitle(ofToString(nId) + ":" + type );
                 loaded = true;
