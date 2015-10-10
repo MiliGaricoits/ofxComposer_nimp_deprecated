@@ -38,6 +38,11 @@ ofxPatch::ofxPatch(){
     texOpacity  = 1.0;
     maskOpacity = 1.0;
     
+    //mili
+    x           = 0;
+    y           = 0;
+    //
+
     string shaderProgram = "#version 120\n\
 #extension GL_ARB_texture_rectangle : enable\n\
 \n\

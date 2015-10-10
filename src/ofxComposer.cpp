@@ -173,8 +173,10 @@ bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
     loaded = nPatch->loadType( _type, "config.xml" );
     
     if ( loaded ){
-        nPatch->move( _position );
+        //mili (scale antes de move)
         nPatch->scale(0.5);
+        nPatch->move( _position );
+        //
         nPatch->saveSettings();
         ofAddListener( nPatch->title->close , this, &ofxComposer::closePatch);
 #ifdef USE_OFXGLEDITOR
