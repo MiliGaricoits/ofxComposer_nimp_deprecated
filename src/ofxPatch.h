@@ -82,9 +82,6 @@ public:
     bool            bVisible;
     
     // nico Zoom
-    ofRectangle     getBox();
-    float           getX();
-    float           getY();
     void            moveDiff(ofVec2f diff);
     
 private:

@@ -38,6 +38,11 @@ ofxPatch::ofxPatch(){
     texOpacity  = 1.0;
     maskOpacity = 1.0;
     
+    //mili
+    x           = 0;
+    y           = 0;
+    //
+
     string shaderProgram = "#version 120\n\
 #extension GL_ARB_texture_rectangle : enable\n\
 \n\
@@ -1539,22 +1544,10 @@ bool ofxPatch::saveSettings(string _configFile){
     return saved;
 }
 
-ofRectangle ofxPatch::getBox(){
-    return box;
-}
-
-float ofxPatch::getX(){
-    return x;
-}
-
-float ofxPatch::getY(){
-    return y;
-}
-
+// nico Zoom
 void ofxPatch::moveDiff(ofVec2f diff){
     for(int i = 0; i < 4; i++){
         textureCorners[i] += diff;
     }
-    
     bUpdateCoord = true;
 }

@@ -173,8 +173,10 @@ bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
     loaded = nPatch->loadType( _type, "config.xml" );
     
     if ( loaded ){
-        nPatch->move( _position );
+        //mili (scale antes de move)
         nPatch->scale(0.5);
+        nPatch->move( _position );
+        //
         nPatch->saveSettings();
         ofAddListener( nPatch->title->close , this, &ofxComposer::closePatch);
 #ifdef USE_OFXGLEDITOR
@@ -511,7 +513,6 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
     if(!isAnyPatchHit(e.x, e.y)){
-        
         // si apreto el boton izquierdo muevo todos los nodos
         if(e.button == 0){
             for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -588,32 +589,8 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 }
 
 
-// NICO PRIVATE/PUBLIC AUXILIAR FUNCTIONS
-//-------------------------------------------------------------- ZOOM & DRAG
-// nico
-void ofxComposer::scalePatches(float scale){
-    //    ofPushMatrix();
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-        it->second->scale(scale);
-    }
-    //    ofPopMatrix();
-}
 
-void ofxComposer::translatePatches(ofVec3f translateVec){
-//    //    ofPushMatrix();
-//    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-//        ofVec3f newPoint = *new ofVec3f(it->second->getX() - translateVec.x, it->second->getY() - translateVec.y);
-//        it->second->move(newPoint);
-//    }
-//    //    ofPopMatrix();
-}
-
-
-map<int,ofxPatch*>  ofxComposer::getPatches(){
-    return patches;
-}
-
-// PRIVATE
+// Nico Zoom
 bool ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
     for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -623,6 +600,11 @@ bool ofxComposer::isAnyPatchHit(float x, float y){
     }
     return false;
 }
+
+
+
+
+
 
 // nico Scrollbar
 /*void ofxComposer::_mouseDragged(ofMouseEventArgs &e){

@@ -41,13 +41,6 @@ public:
         }
     }
     
-    // nico zoom
-    static const float ZOOM_UNIT = 1.f;
-    static const float ZOOM_SENSITIVITY = .001f;
-    void    scalePatches(float scale);
-    void    translatePatches(ofVec3f translateVec);
-    bool    isAnyPatchHit(float x, float y);
-    map<int,ofxPatch*>  getPatches();
     // nico ScrollBar
     //void    setup();
     
@@ -64,8 +57,12 @@ private:
     void    activePatch( int _nID );
     bool    connect( int _fromID, int _toID, int _nTexture );
     
-    //nico
+    //nico scrollBar
     //void    updateScrollBar();
+    // nico Auxiliar Zoom y Drag
+    static const float ZOOM_UNIT = 1.f;
+    static const float ZOOM_SENSITIVITY = .001f;
+    bool    isAnyPatchHit(float x, float y);
 
 #ifdef USE_OFXGLEDITOR
 	ofxGLEditor editor;
