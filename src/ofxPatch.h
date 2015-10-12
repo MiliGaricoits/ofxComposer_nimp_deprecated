@@ -81,6 +81,12 @@ public:
     bool            bEditMask;
     bool            bVisible;
     
+    // nico Zoom
+    ofRectangle     getBox();
+    float           getX();
+    float           getY();
+    void            moveDiff(ofVec2f diff);
+    
 private:
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix
     void            doScreenToSurfaceMatrix();      // Update the ScreenToSurface transformation matrix

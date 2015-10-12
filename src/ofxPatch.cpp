@@ -1538,3 +1538,23 @@ bool ofxPatch::saveSettings(string _configFile){
     
     return saved;
 }
+
+ofRectangle ofxPatch::getBox(){
+    return box;
+}
+
+float ofxPatch::getX(){
+    return x;
+}
+
+float ofxPatch::getY(){
+    return y;
+}
+
+void ofxPatch::moveDiff(ofVec2f diff){
+    for(int i = 0; i < 4; i++){
+        textureCorners[i] += diff;
+    }
+    
+    bUpdateCoord = true;
+}

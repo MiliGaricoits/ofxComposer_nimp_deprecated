@@ -45,7 +45,7 @@ ofxComposer::ofxComposer(){
 	ofAddListener(ofEvents().keyPressed, this, &ofxComposer::_keyPressed);
     ofAddListener(ofEvents().windowResized, this, &ofxComposer::_windowResized);
     // nico SrollBar
-    //ofAddListener(ofEvents().mouseDragged, this, &ofxComposer::_mouseDragged);
+    ofAddListener(ofEvents().mouseDragged, this, &ofxComposer::_mouseDragged);
     
 #ifdef USE_OFXGLEDITOR       
     editor.setup("menlo.ttf");
@@ -503,6 +503,34 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     // scroll bar end
 }
 
+
+// Nico ZOOM & DRAG
+void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
+    ofVec3f mouse = ofVec3f(e.x, e.y,0);
+    ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
+    
+    // si el mouse esta siendo arrastrado y no hay un nodo abajo
+    if(!isAnyPatchHit(e.x, e.y)){
+        
+        // si apreto el boton izquierdo muevo todos los nodos
+        if(e.button == 0){
+            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                it->second->moveDiff(mouse-mouseLast);
+            }
+        }
+        
+        // si apreto el boton derecho, hago zoom in/out
+        if(e.button == 2){
+            float scaleDiff = (mouse.y - mouseLast.y)*ZOOM_SENSITIVITY;
+            float scale = ZOOM_UNIT + scaleDiff;
+            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                it->second->scale(scale);
+            }
+        }
+    }
+    
+}
+
 void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
@@ -557,6 +585,43 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
     // nico scrollBar
     // Place the grip at the top of the scroll bar if the size of the panel change
     //gripRectangle.y = 0;
+}
+
+
+// NICO PRIVATE/PUBLIC AUXILIAR FUNCTIONS
+//-------------------------------------------------------------- ZOOM & DRAG
+// nico
+void ofxComposer::scalePatches(float scale){
+    //    ofPushMatrix();
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        it->second->scale(scale);
+    }
+    //    ofPopMatrix();
+}
+
+void ofxComposer::translatePatches(ofVec3f translateVec){
+//    //    ofPushMatrix();
+//    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+//        ofVec3f newPoint = *new ofVec3f(it->second->getX() - translateVec.x, it->second->getY() - translateVec.y);
+//        it->second->move(newPoint);
+//    }
+//    //    ofPopMatrix();
+}
+
+
+map<int,ofxPatch*>  ofxComposer::getPatches(){
+    return patches;
+}
+
+// PRIVATE
+bool ofxComposer::isAnyPatchHit(float x, float y){
+    ofPoint *point = new ofPoint(x,y);
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(it->second->isOver(*point)){
+            return true;
+        }
+    }
+    return false;
 }
 
 // nico Scrollbar
