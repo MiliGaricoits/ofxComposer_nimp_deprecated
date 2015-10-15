@@ -62,6 +62,7 @@ private:
     // nico Auxiliar Zoom y Drag
     static const float ZOOM_UNIT = 1.f;
     static const float ZOOM_SENSITIVITY = .001f;
+    bool    disabledPatches;
     bool    isAnyPatchHit(float x, float y);
 
 #ifdef USE_OFXGLEDITOR

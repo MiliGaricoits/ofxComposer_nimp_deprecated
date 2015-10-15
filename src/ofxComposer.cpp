@@ -66,6 +66,9 @@ ofxComposer::ofxComposer(){
     bEditMode = true;
     bGLEditorPatch = false;
     bHelp = false;
+    
+    // nico zoom/drag
+    disabledPatches = false;
 }
 
 void ofxComposer::load(string _fileConfig){
@@ -492,6 +495,11 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
         }
     }
     
+    // nico zoom/drag
+    if(!isAnyPatchHit(e.x, e.y)){
+        disabledPatches = true;
+    }
+    
     //nico Scrollbar begin
     // Check if the click occur on the grip
     /*if (isScrollBarVisible) {
@@ -512,7 +520,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(!isAnyPatchHit(e.x, e.y)){
+    if(disabledPatches){
         // si apreto el boton izquierdo muevo todos los nodos
         if(e.button == 0){
             for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -572,6 +580,9 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     
     // nico ScrollBar
     //isDraggingGrip = false;
+    
+    // nico zoom/drag
+    disabledPatches = false;
 }
 
 void ofxComposer::_windowResized(ofResizeEventArgs &e){
@@ -593,12 +604,14 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 // Nico Zoom
 bool ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    bool isAnyHit = false;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && !isAnyHit ; it++ ){
         if(it->second->isOver(*point)){
-            return true;
+            isAnyHit = true;
         }
     }
-    return false;
+    delete point;
+    return isAnyHit;
 }
 
 
