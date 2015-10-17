@@ -42,6 +42,10 @@ ofxPatch::ofxPatch(){
     x           = 0;
     y           = 0;
     //
+    
+    //nico
+    disabledPatch = false;
+    //
 
     string shaderProgram = "#version 120\n\
 #extension GL_ARB_texture_rectangle : enable\n\
@@ -754,6 +758,12 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
 }
 
 void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
+    // nico
+    if(disabledPatch){
+        return;
+    }
+    //
+    
     ofVec3f mouse = ofVec3f(e.x, e.y,0);
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
@@ -1550,4 +1560,8 @@ void ofxPatch::moveDiff(ofVec2f diff){
         textureCorners[i] += diff;
     }
     bUpdateCoord = true;
+}
+
+void ofxPatch::setDisablePatch(bool disable){
+    disabledPatch = disable;
 }

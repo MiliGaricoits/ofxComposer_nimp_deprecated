@@ -83,6 +83,8 @@ public:
     
     // nico Zoom
     void            moveDiff(ofVec2f diff);
+    // esto lo tuve que poner, porque si hago zoom y despues paso por arriba de un nodo, lo empiezo a mover
+    void            setDisablePatch(bool disable);
     
 private:
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix
@@ -99,6 +101,9 @@ private:
     //mili
     void            _stopVideo( int &_nId );
     void            _playVideo( int &_nId );
+    
+    // nico zoom/drag
+    bool            disabledPatch;
     
     
     // 5 Sources Objects and one interface to rule them all

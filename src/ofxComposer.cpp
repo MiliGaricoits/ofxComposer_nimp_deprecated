@@ -471,6 +471,13 @@ void ofxComposer::activePatch( int _nID ){
 
 void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
+    
+    // nico zoom/drag
+    if(!isAnyPatchHit(e.x, e.y)){
+        disabledPatches = true;
+    }else{
+        disabledPatches = false;
+    }
 
     selectedDot = -1;    
     for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -479,6 +486,9 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
             it->second->bActive = false;
             selectedID = -1;
         }
+        
+        //nico zoom/drag
+        it->second->setDisablePatch(disabledPatches);
     }
     
     if (selectedDot == -1){
@@ -493,11 +503,6 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
 #endif
             }
         }
-    }
-    
-    // nico zoom/drag
-    if(!isAnyPatchHit(e.x, e.y)){
-        disabledPatches = true;
     }
     
     //nico Scrollbar begin
@@ -566,6 +571,9 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
                     }
                 }
             }
+            
+            //nico zoom/drag
+            it->second->setDisablePatch(false);
         }
         
         // If he release the mouse over nothing it will clear all
