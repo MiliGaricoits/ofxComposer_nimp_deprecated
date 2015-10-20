@@ -172,6 +172,10 @@ ofTexture& ofxPatch::getSrcTexture(){
         return maskFbo.dst->getTextureReference();
 }
 
+ofPolyline ofxPatch::getCoorners() {
+    return textureCorners;
+}
+
 ofTexture& ofxPatch::getTextureReference(){
     if (bMasking)
         return maskFbo.dst->getTextureReference();

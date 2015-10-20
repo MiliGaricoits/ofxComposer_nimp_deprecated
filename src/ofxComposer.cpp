@@ -69,6 +69,10 @@ ofxComposer::ofxComposer(){
     
     // nico zoom/drag
     disabledPatches = false;
+    
+    // mili  nodes aligned
+    verticalAlign = 0;
+    horizontalAlign = 0;
 }
 
 void ofxComposer::load(string _fileConfig){
@@ -350,6 +354,15 @@ void ofxComposer::draw(){
         ofLine(patches[selectedDot]->getOutPutPosition(), ofPoint(ofGetMouseX(),ofGetMouseY()));
     }
     
+    //mili - nodes aligned
+    if (verticalAlign) {
+        ofLine(verticalAlign, 0, verticalAlign, ofGetHeight());
+    }
+    if (horizontalAlign) {
+        ofLine(0, horizontalAlign, ofGetWidth(), horizontalAlign);
+    }
+    //
+        
     //  Draw Help screen
     //
     if (bHelp){
@@ -473,7 +486,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
     // nico zoom/drag
-    if(!isAnyPatchHit(e.x, e.y)){
+    if(isAnyPatchHit(e.x, e.y) == -1){
         disabledPatches = true;
     }else{
         disabledPatches = false;
@@ -541,8 +554,48 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
                 it->second->scale(scale);
             }
         }
+        verticalAlign = 0;
     }
-    
+    else {
+        int activePatch = isAnyPatchHit(mouse.x, mouse.y);
+        if (activePatch == -1)
+            return;
+        
+        ofxPatch* patch = patches[activePatch];
+        
+        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            
+            if (it->second != patch) {
+                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[0].x or
+                    (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[0].x) {
+                    verticalAlign = patch->getCoorners()[0].x ;
+                    return;
+                }
+                else if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
+                         (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
+                    verticalAlign = patch->getCoorners()[1].x;
+                    return;
+                }
+                else {
+                    verticalAlign = 0;
+                }
+                
+                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[1].y or
+                    (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[1].y) {
+                    horizontalAlign = patch->getCoorners()[1].y ;
+                    return;
+                }
+                else if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
+                         (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
+                    horizontalAlign = patch->getCoorners()[3].y;
+                    return;
+                }
+                else {
+                    horizontalAlign = 0;
+                }
+            }
+        }
+    }
 }
 
 void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
@@ -610,12 +663,12 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 
 
 // Nico Zoom
-bool ofxComposer::isAnyPatchHit(float x, float y){
+int ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
-    bool isAnyHit = false;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && !isAnyHit ; it++ ){
+    int isAnyHit = -1;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
         if(it->second->isOver(*point)){
-            isAnyHit = true;
+            isAnyHit = it->first;
         }
     }
     delete point;

@@ -58,6 +58,9 @@ public:
     GLfloat*        getGlMatrix() { return glMatrix; };
     string          getFrag();
     //string        getVert();
+    //mili
+    ofPolyline      getCoorners();
+    //
     ofTexture&      getTextureReference();
     ofxShaderObj*   getShader(){ if (getType() == "ofShader") return shader; else return NULL; };
     ofPoint&        getOutPutPosition(){ return outPutPos; };

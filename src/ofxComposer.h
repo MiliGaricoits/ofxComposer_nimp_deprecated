@@ -63,7 +63,12 @@ private:
     static const float ZOOM_UNIT = 1.f;
     static const float ZOOM_SENSITIVITY = .001f;
     bool    disabledPatches;
-    bool    isAnyPatchHit(float x, float y);
+    // nico
+    int    isAnyPatchHit(float x, float y);
+    //
+    // mili align nodes
+    int verticalAlign, horizontalAlign;
+    //
 
 #ifdef USE_OFXGLEDITOR
 	ofxGLEditor editor;
