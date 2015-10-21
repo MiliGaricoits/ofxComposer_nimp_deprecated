@@ -67,7 +67,7 @@ private:
     int    isAnyPatchHit(float x, float y);
     //
     // mili align nodes
-    int verticalAlign, horizontalAlign;
+    int verticalAlign1, verticalAlign2, horizontalAlign1, horizontalAlign2;
     //
 
 #ifdef USE_OFXGLEDITOR

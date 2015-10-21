@@ -71,8 +71,10 @@ ofxComposer::ofxComposer(){
     disabledPatches = false;
     
     // mili  nodes aligned
-    verticalAlign = 0;
-    horizontalAlign = 0;
+    verticalAlign1 = 0;
+    verticalAlign2 = 0;
+    horizontalAlign1 = 0;
+    horizontalAlign2 = 0;
 }
 
 void ofxComposer::load(string _fileConfig){
@@ -355,13 +357,21 @@ void ofxComposer::draw(){
     }
     
     //mili - nodes aligned
-    if (verticalAlign) {
+    if (verticalAlign1) {
         ofSetColor(255, 208, 111);
-        ofLine(verticalAlign, 0, verticalAlign, ofGetHeight());
+        ofLine(verticalAlign1, 0, verticalAlign1, ofGetHeight());
     }
-    if (horizontalAlign) {
+    if (verticalAlign2) {
         ofSetColor(255, 208, 111);
-        ofLine(0, horizontalAlign, ofGetWidth(), horizontalAlign);
+        ofLine(verticalAlign2, 0, verticalAlign2, ofGetHeight());
+    }
+    if (horizontalAlign1) {
+        ofSetColor(255, 208, 111);
+        ofLine(0, horizontalAlign1, ofGetWidth(), horizontalAlign1);
+    }
+    if (horizontalAlign2) {
+        ofSetColor(255, 208, 111);
+        ofLine(0, horizontalAlign2, ofGetWidth(), horizontalAlign2);
     }
     //
         
@@ -556,7 +566,6 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
                 it->second->scale(scale);
             }
         }
-        verticalAlign = 0;
     }
     else {
         int activePatch = isAnyPatchHit(mouse.x, mouse.y);
@@ -564,37 +573,34 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
             return;
         
         ofxPatch* patch = patches[activePatch];
+        verticalAlign1 = 0;
+        verticalAlign2 = 0;
+        horizontalAlign1 = 0;
+        horizontalAlign2 = 0;
         
         for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             
             if (it->second != patch) {
                 if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[0].x or
                     (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[0].x) {
-                    verticalAlign = patch->getCoorners()[0].x ;
-                    return;
+                    verticalAlign1 = patch->getCoorners()[0].x ;
                 }
-                else if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
-                         (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
-                    verticalAlign = patch->getCoorners()[1].x;
-                    return;
-                }
-                else {
-                    verticalAlign = 0;
+                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
+                     (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
+                    verticalAlign2 = patch->getCoorners()[1].x;
                 }
                 
                 if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[1].y or
                     (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[1].y) {
-                    horizontalAlign = patch->getCoorners()[1].y ;
+                    horizontalAlign1 = patch->getCoorners()[1].y ;
+                }
+                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
+                     (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
+                    horizontalAlign2 = patch->getCoorners()[3].y;
+                }
+                
+                if(verticalAlign1 or verticalAlign2 or horizontalAlign1 or horizontalAlign2)
                     return;
-                }
-                else if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
-                         (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
-                    horizontalAlign = patch->getCoorners()[3].y;
-                    return;
-                }
-                else {
-                    horizontalAlign = 0;
-                }
             }
         }
     }
@@ -648,8 +654,10 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     disabledPatches = false;
     
     //mili - aligned nodes
-    verticalAlign = 0;
-    horizontalAlign = 0;
+    verticalAlign1 = 0;
+    verticalAlign2 = 0;
+    horizontalAlign1 = 0;
+    horizontalAlign2 = 0;
     //
 }
 
