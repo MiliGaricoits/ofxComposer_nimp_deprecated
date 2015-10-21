@@ -356,9 +356,11 @@ void ofxComposer::draw(){
     
     //mili - nodes aligned
     if (verticalAlign) {
+        ofSetColor(255, 208, 111);
         ofLine(verticalAlign, 0, verticalAlign, ofGetHeight());
     }
     if (horizontalAlign) {
+        ofSetColor(255, 208, 111);
         ofLine(0, horizontalAlign, ofGetWidth(), horizontalAlign);
     }
     //
@@ -644,6 +646,11 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     
     // nico zoom/drag
     disabledPatches = false;
+    
+    //mili - aligned nodes
+    verticalAlign = 0;
+    horizontalAlign = 0;
+    //
 }
 
 void ofxComposer::_windowResized(ofResizeEventArgs &e){
