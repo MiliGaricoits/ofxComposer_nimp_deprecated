@@ -1565,3 +1565,25 @@ void ofxPatch::moveDiff(ofVec2f diff){
 void ofxPatch::setDisablePatch(bool disable){
     disabledPatch = disable;
 }
+
+float ofxPatch::getHighestYCoord(){
+    int highestCoord = 0;
+    for(int i = 0; i < 4; i++){
+        if(highestCoord < textureCorners[i].y){
+            highestCoord = textureCorners[i].y;
+        }
+    }
+    return highestCoord;
+}
+
+
+float ofxPatch::getLowestYCoord(){
+    int lowestCoord = 10000;
+    for(int i = 0; i < 4; i++){
+        
+        if(lowestCoord > textureCorners[i].y){
+            lowestCoord = textureCorners[i].y;
+        }
+    }
+    return lowestCoord;
+}

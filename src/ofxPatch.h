@@ -86,6 +86,10 @@ public:
     // esto lo tuve que poner, porque si hago zoom y despues paso por arriba de un nodo, lo empiezo a mover
     void            setDisablePatch(bool disable);
     
+    // nico Drag
+    float           getHighestYCoord();
+    float           getLowestYCoord();
+    
 private:
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix
     void            doScreenToSurfaceMatrix();      // Update the ScreenToSurface transformation matrix

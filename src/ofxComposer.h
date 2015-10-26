@@ -42,7 +42,7 @@ public:
     }
     
     // nico ScrollBar
-    //void    setup();
+    void    scrollBarSetup();
     
 private:
     // Events
@@ -58,7 +58,9 @@ private:
     bool    connect( int _fromID, int _toID, int _nTexture );
     
     //nico scrollBar
-    //void    updateScrollBar();
+    void    updateScrollBar();
+    int     getPatchesLowestCoord();
+    int     getPatchesHighestCoord();
     // nico Auxiliar Zoom y Drag
     static const float ZOOM_UNIT = 1.f;
     static const float ZOOM_SENSITIVITY = .001f;
@@ -84,19 +86,18 @@ private:
     
     // nico ScrollBar empieza
     /* Display parameters for the panel */
-    /*int gap;
-    int margin;
-    int scrollBarWidth;
+    float gap;
+    float margin;
+    float scrollBarWidth;
     
-    int panelWidth;
-    int panelHeight;
-    int contentScrollY;
+    float panelWidth;
+    float panelHeight;
     bool isScrollBarVisible;
     ofRectangle scrollBarRectangle;
     ofRectangle gripRectangle;
     bool isDraggingGrip;
     bool isMouseOverGrip;
-    int mousePreviousY;*/
+    int mousePreviousY;
     // nico ScrollBar fin
     
 };
