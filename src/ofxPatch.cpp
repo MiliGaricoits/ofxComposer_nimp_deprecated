@@ -172,6 +172,10 @@ ofTexture& ofxPatch::getSrcTexture(){
         return maskFbo.dst->getTextureReference();
 }
 
+ofPolyline ofxPatch::getCoorners() {
+    return textureCorners;
+}
+
 ofTexture& ofxPatch::getTextureReference(){
     if (bMasking)
         return maskFbo.dst->getTextureReference();
@@ -948,11 +952,9 @@ void ofxPatch::_playVideo(int &_nId) {
     if (videoInterface->getVideoState() == VIDEO_PLAY) {
         videoPlayer->stop();
         videoInterface->setVideoState(VIDEO_PAUSE);
-        scale(1.1);
     } else {
         videoPlayer->play();
         videoInterface->setVideoState(VIDEO_PLAY);
-        scale(0.909);
     }
 }
 

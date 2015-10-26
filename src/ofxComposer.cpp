@@ -69,6 +69,12 @@ ofxComposer::ofxComposer(){
     
     // nico zoom/drag
     disabledPatches = false;
+    
+    // mili  nodes aligned
+    verticalAlign1 = 0;
+    verticalAlign2 = 0;
+    horizontalAlign1 = 0;
+    horizontalAlign2 = 0;
 }
 
 void ofxComposer::load(string _fileConfig){
@@ -324,7 +330,7 @@ void ofxComposer::draw(){
     ofEnableAlphaBlending();
     
 #ifdef USE_OFXGLEDITOR
-    //  Draw the GLEditor if it«s not inside a Patch
+    //  Draw the GLEditor if itï¿½s not inside a Patch
     //
     if (bEditMode && !bGLEditorPatch){
         ofPushMatrix();
@@ -348,6 +354,25 @@ void ofxComposer::draw(){
         ofLine(patches[selectedDot]->getOutPutPosition(), ofPoint(ofGetMouseX(),ofGetMouseY()));
     }
     
+    //mili - nodes aligned
+    if (verticalAlign1) {
+        ofSetColor(255, 208, 111);
+        ofLine(verticalAlign1, 0, verticalAlign1, ofGetHeight());
+    }
+    if (verticalAlign2) {
+        ofSetColor(255, 208, 111);
+        ofLine(verticalAlign2, 0, verticalAlign2, ofGetHeight());
+    }
+    if (horizontalAlign1) {
+        ofSetColor(255, 208, 111);
+        ofLine(0, horizontalAlign1, ofGetWidth(), horizontalAlign1);
+    }
+    if (horizontalAlign2) {
+        ofSetColor(255, 208, 111);
+        ofLine(0, horizontalAlign2, ofGetWidth(), horizontalAlign2);
+    }
+    //
+        
     //  Draw Help screen
     //
     if (bHelp){
@@ -471,7 +496,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
     // nico zoom/drag
-    if(!isAnyPatchHit(e.x, e.y)){
+    if(isAnyPatchHit(e.x, e.y) == -1){
         disabledPatches = true;
     }else{
         disabledPatches = false;
@@ -522,27 +547,8 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouse = ofVec3f(e.x, e.y,0);
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
-    // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !isDraggingGrip){
-        // si apreto el boton izquierdo muevo todos los nodos
-        if(e.button == 0){
-            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-                it->second->moveDiff(mouse-mouseLast);
-            }
-        }
-        
-        // si apreto el boton derecho, hago zoom in/out
-        if(e.button == 2){
-            float scaleDiff = (mouse.y - mouseLast.y)*ZOOM_SENSITIVITY;
-            float scale = ZOOM_UNIT + scaleDiff;
-            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-                it->second->scale(scale);
-            }
-        }
-    }
     
-    
-    // nico drag
+    // nico drag Inicio
     if (isScrollBarVisible && isDraggingGrip) {
         // Move the grip according to the mouse displacement
         int dy = e.y - mousePreviousY;
@@ -566,8 +572,69 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         }
         
     }
-    
     updateScrollBar();
+    // nico drag end.
+    
+    
+    /********************************************************
+     Tuve que ponerlo al principio por los return que hay abajo, no dejaban que se llegue a ejecutar el codigo
+    ********************************************************/ 
+    
+    
+    // si el mouse esta siendo arrastrado y no hay un nodo abajo
+    if(disabledPatches && !isDraggingGrip){
+        // si apreto el boton izquierdo muevo todos los nodos
+        if(e.button == 0){
+            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                it->second->moveDiff(mouse-mouseLast);
+            }
+        }
+        
+        // si apreto el boton derecho, hago zoom in/out
+        if(e.button == 2){
+            float scaleDiff = (mouse.y - mouseLast.y)*ZOOM_SENSITIVITY;
+            float scale = ZOOM_UNIT + scaleDiff;
+            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                it->second->scale(scale);
+            }
+        }
+    } else {
+        int activePatch = isAnyPatchHit(mouse.x, mouse.y);
+        if (activePatch == -1)
+            return;
+        
+        ofxPatch* patch = patches[activePatch];
+        verticalAlign1 = 0;
+        verticalAlign2 = 0;
+        horizontalAlign1 = 0;
+        horizontalAlign2 = 0;
+        
+        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            
+            if (it->second != patch) {
+                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[0].x or
+                    (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[0].x) {
+                    verticalAlign1 = patch->getCoorners()[0].x ;
+                }
+                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
+                    (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
+                    verticalAlign2 = patch->getCoorners()[1].x;
+                }
+                
+                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[1].y or
+                    (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[1].y) {
+                    horizontalAlign1 = patch->getCoorners()[1].y ;
+                }
+                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
+                    (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
+                    horizontalAlign2 = patch->getCoorners()[3].y;
+                }
+                
+                if(verticalAlign1 or verticalAlign2 or horizontalAlign1 or horizontalAlign2)
+                    return;
+            }
+        }
+    }
     
 }
 
@@ -617,6 +684,13 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     
     // nico zoom/drag
     disabledPatches = false;
+    
+    //mili - aligned nodes
+    verticalAlign1 = 0;
+    verticalAlign2 = 0;
+    horizontalAlign1 = 0;
+    horizontalAlign2 = 0;
+    //
 }
 
 void ofxComposer::_windowResized(ofResizeEventArgs &e){
@@ -636,12 +710,12 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 
 
 // Nico Zoom
-bool ofxComposer::isAnyPatchHit(float x, float y){
+int ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
-    bool isAnyHit = false;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && !isAnyHit ; it++ ){
+    int isAnyHit = -1;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
         if(it->second->isOver(*point)){
-            isAnyHit = true;
+            isAnyHit = it->first;
         }
     }
     delete point;
