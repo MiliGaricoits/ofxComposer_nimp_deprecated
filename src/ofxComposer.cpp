@@ -701,10 +701,6 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
     ofClear(editorBgColor);
     editorFbo.end();
 #endif
-    
-    // nico scrollBar
-    // Place the grip at the top of the scroll bar if the size of the panel change
-    gripRectangle.y = 0;
 }
 
 
