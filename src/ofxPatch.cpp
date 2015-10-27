@@ -399,7 +399,10 @@ void ofxPatch::draw(){
                 ofSetColor(150);
                 ofFill();
                 ofCircle(outPut[i].pos, 3);
-                ofLine(outPut[i].pos, outPut[i].to->pos);
+                //ofLine(outPut[i].pos, outPut[i].to->pos);
+                ofNoFill();
+                ofBezier(outPut[i].pos.x, outPut[i].pos.y, outPut[i].pos.x+55, outPut[i].pos.y, outPut[i].to->pos.x-55, outPut[i].to->pos.y, outPut[i].to->pos.x, outPut[i].to->pos.y);
+                ofFill();
                 ofCircle(outPut[i].to->pos, 3);
             }
         }

@@ -363,6 +363,10 @@ void ofxComposer::draw(){
         ofSetColor(255, 208, 111);
         ofLine(verticalAlign2, 0, verticalAlign2, ofGetHeight());
     }
+    if (verticalAlign3) {
+        ofSetColor(255, 208, 111);
+        ofLine(verticalAlign3, 0, verticalAlign3, ofGetHeight());
+    }
     if (horizontalAlign1) {
         ofSetColor(255, 208, 111);
         ofLine(0, horizontalAlign1, ofGetWidth(), horizontalAlign1);
@@ -370,6 +374,10 @@ void ofxComposer::draw(){
     if (horizontalAlign2) {
         ofSetColor(255, 208, 111);
         ofLine(0, horizontalAlign2, ofGetWidth(), horizontalAlign2);
+    }
+    if (horizontalAlign3) {
+        ofSetColor(255, 208, 111);
+        ofLine(0, horizontalAlign3, ofGetWidth(), horizontalAlign3);
     }
     //
         
@@ -606,8 +614,10 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         ofxPatch* patch = patches[activePatch];
         verticalAlign1 = 0;
         verticalAlign2 = 0;
+        verticalAlign3 = 0;
         horizontalAlign1 = 0;
         horizontalAlign2 = 0;
+        horizontalAlign3 = 0;
         
         for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             
@@ -616,21 +626,27 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
                     (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[0].x) {
                     verticalAlign1 = patch->getCoorners()[0].x ;
                 }
+                if ((int)(it->second->getCoorners()[0].x + it->second->getBox().width/2) == (int)(patch->getCoorners()[0].x + patch->getBox().width/2)) {
+                    verticalAlign2 = (patch->getCoorners()[0].x + patch->getBox().width/2);
+                }
                 if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
                     (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
-                    verticalAlign2 = patch->getCoorners()[1].x;
+                    verticalAlign3 = patch->getCoorners()[1].x;
                 }
                 
                 if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[1].y or
                     (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[1].y) {
                     horizontalAlign1 = patch->getCoorners()[1].y ;
                 }
+                if ((int)(it->second->getCoorners()[1].y + it->second->getBox().height/2) == (int)(patch->getCoorners()[1].y + patch->getBox().height/2)) {
+                    horizontalAlign2 = (patch->getCoorners()[1].y + patch->getBox().height/2);
+                }
                 if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
                     (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
-                    horizontalAlign2 = patch->getCoorners()[3].y;
+                    horizontalAlign3 = patch->getCoorners()[3].y;
                 }
                 
-                if(verticalAlign1 or verticalAlign2 or horizontalAlign1 or horizontalAlign2)
+                if(verticalAlign1 or verticalAlign2 or verticalAlign3 or horizontalAlign1 or horizontalAlign2 or horizontalAlign3)
                     return;
             }
         }
@@ -688,8 +704,10 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     //mili - aligned nodes
     verticalAlign1 = 0;
     verticalAlign2 = 0;
+    verticalAlign3 = 0;
     horizontalAlign1 = 0;
     horizontalAlign2 = 0;
+    horizontalAlign3 = 0;
     //
 }
 

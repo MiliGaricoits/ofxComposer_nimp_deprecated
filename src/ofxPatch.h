@@ -60,6 +60,7 @@ public:
     //string        getVert();
     //mili
     ofPolyline      getCoorners();
+    ofRectangle     getBox() { return box; };
     //
     ofTexture&      getTextureReference();
     ofxShaderObj*   getShader(){ if (getType() == "ofShader") return shader; else return NULL; };
