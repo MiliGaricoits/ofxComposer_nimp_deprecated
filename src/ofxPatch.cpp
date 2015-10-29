@@ -1606,3 +1606,25 @@ float ofxPatch::getLowestYCoord(){
     }
     return lowestCoord;
 }
+
+float ofxPatch::getHighestXCoord(){
+    int highestCoord = 0;
+    for(int i = 0; i < 4; i++){
+        if(highestCoord < textureCorners[i].x){
+            highestCoord = textureCorners[i].x;
+        }
+    }
+    return highestCoord;
+}
+
+
+float ofxPatch::getLowestXCoord(){
+    int lowestCoord = 10000;
+    for(int i = 0; i < 4; i++){
+        
+        if(lowestCoord > textureCorners[i].x){
+            lowestCoord = textureCorners[i].x;
+        }
+    }
+    return lowestCoord;
+}

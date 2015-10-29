@@ -45,13 +45,15 @@ protected:
     map<int,ofxPatch*>  patches;
     int     getPatchesLowestCoord();
     int     getPatchesHighestCoord();
+    int     getPatchesLeftMostCoord();
+    int     getPatchesRightMostCoord();
     
     void    movePatches(ofVec3f diff);
     void    scalePatches(float yDiff);
     void    setDraggingGrip(bool dragging);
-    void    setMouseOverGrip(bool over);
+    void    setDraggingHGrip(bool dragging);
     bool    isDraggingGrip();
-    bool    isMouseOverGrip();
+    bool    isDraggingHGrip();
     
 private:
     // Events
@@ -94,7 +96,7 @@ private:
     
     // nico scroll bar
     bool draggingGrip;
-    bool mouseOverGrip;
+    bool draggingHGrip;
     // nico scroll bar fin
     
 };

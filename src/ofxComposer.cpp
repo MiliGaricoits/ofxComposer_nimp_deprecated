@@ -486,7 +486,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !draggingGrip){
+    if(disabledPatches && !draggingGrip && !draggingHGrip){
         // si apreto el boton izquierdo muevo todos los nodos
         if(e.button == 0){
             movePatches(mouse - mouseLast);
@@ -655,13 +655,28 @@ int ofxComposer::getPatchesHighestCoord(){
     }
     return coordMasAlta;
 }
+
+int ofxComposer::getPatchesLeftMostCoord(){
+    int coordMasIzq = 1000;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(coordMasIzq > it->second->getLowestXCoord()){
+            coordMasIzq = it->second->getLowestXCoord();
+        }
+    }
+    return coordMasIzq - 30;
+}
+int ofxComposer::getPatchesRightMostCoord(){
+    int coordMasDer = -1;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(coordMasDer < it->second->getHighestXCoord()){
+            coordMasDer = it->second->getHighestXCoord();
+        }
+    }
+    return coordMasDer;
+}
 // nico scrollbar end
 
 /************************************** GETTERS AND SETTERS ******************************/
-bool ofxComposer::isMouseOverGrip(){
-    return mouseOverGrip;
-}
-
 bool ofxComposer::isDraggingGrip(){
     return draggingGrip;
 }
@@ -670,6 +685,10 @@ void ofxComposer::setDraggingGrip(bool dragging){
     draggingGrip = dragging;
 }
 
-void ofxComposer::setMouseOverGrip(bool over){
-    mouseOverGrip = over;
+bool ofxComposer::isDraggingHGrip(){
+    return draggingHGrip;
+}
+
+void ofxComposer::setDraggingHGrip(bool dragging){
+    draggingHGrip = dragging;
 }
