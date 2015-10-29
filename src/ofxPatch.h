@@ -17,6 +17,7 @@
 #include "ofxShaderObj.h"
 #include "ofxPingPong.h"
 #include "nodeVideoInterface.h"
+#include "enumerations.h"
 
 struct LinkDot{
     LinkDot(){
@@ -61,6 +62,7 @@ public:
     //mili
     ofPolyline      getCoorners();
     ofRectangle     getBox() { return box; };
+    void            setLinkType(nodeLinkType type);
     //
     ofTexture&      getTextureReference();
     ofxShaderObj*   getShader(){ if (getType() == "ofShader") return shader; else return NULL; };
@@ -109,6 +111,7 @@ private:
     //mili
     void            _stopVideo( int &_nId );
     void            _playVideo( int &_nId );
+    //
     
     // nico zoom/drag
     bool            disabledPatch;
@@ -159,7 +162,10 @@ private:
     bool            bUpdateMask;
     bool            bUpdateCoord;
     
+    //mili
     nodeVideoInterface *videoInterface;
+    nodeLinkType linkType;
+    //
 };
 
 #endif

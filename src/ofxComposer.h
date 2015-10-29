@@ -44,6 +44,9 @@ public:
     // nico ScrollBar
     void    scrollBarSetup();
     
+protected:
+    map<int,ofxPatch*>  patches;
+    
 private:
     // Events
     void    _mouseMoved(ofMouseEventArgs &e);
@@ -78,8 +81,6 @@ private:
     ofColor     editorBgColor;
     ofColor     editorFgColor;
 #endif
-    
-    map<int,ofxPatch*>  patches;
     
     string  configFile;
     

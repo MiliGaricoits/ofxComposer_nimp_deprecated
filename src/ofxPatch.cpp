@@ -172,9 +172,15 @@ ofTexture& ofxPatch::getSrcTexture(){
         return maskFbo.dst->getTextureReference();
 }
 
+//mili
 ofPolyline ofxPatch::getCoorners() {
     return textureCorners;
 }
+
+void ofxPatch::setLinkType(nodeLinkType type) {
+    linkType = type;
+}
+//
 
 ofTexture& ofxPatch::getTextureReference(){
     if (bMasking)
@@ -399,10 +405,18 @@ void ofxPatch::draw(){
                 ofSetColor(150);
                 ofFill();
                 ofCircle(outPut[i].pos, 3);
-                //ofLine(outPut[i].pos, outPut[i].to->pos);
-                ofNoFill();
-                ofBezier(outPut[i].pos.x, outPut[i].pos.y, outPut[i].pos.x+55, outPut[i].pos.y, outPut[i].to->pos.x-55, outPut[i].to->pos.y, outPut[i].to->pos.x, outPut[i].to->pos.y);
-                ofFill();
+                //mili - curved lines
+                if (linkType == STRAIGHT_LINKS)
+                    ofLine(outPut[i].pos, outPut[i].to->pos);
+                else if (linkType == CURVE_LINKS) {
+                    ofNoFill();
+                    ofBezier(outPut[i].pos.x, outPut[i].pos.y, outPut[i].pos.x+55, outPut[i].pos.y, outPut[i].to->pos.x-55, outPut[i].to->pos.y, outPut[i].to->pos.x, outPut[i].to->pos.y);
+                    ofFill();
+                }
+                else {
+                    ofLine(outPut[i].pos, outPut[i].to->pos);
+                }
+                //
                 ofCircle(outPut[i].to->pos, 3);
             }
         }

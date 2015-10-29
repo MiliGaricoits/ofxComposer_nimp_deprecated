@@ -647,7 +647,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
                 }
                 
                 if(verticalAlign1 or verticalAlign2 or verticalAlign3 or horizontalAlign1 or horizontalAlign2 or horizontalAlign3)
-                    return;
+                    break;
             }
         }
     }
