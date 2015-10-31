@@ -850,7 +850,13 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 
                 // Drag all the surface
                 //
-            } else if ( isOver(mouse) && bActive ){
+             
+            /*********************************************************/
+            /****** CAMBIO PARA QUE FUNCIONE EL DRAG DIFERENTE *******/
+//            } else if ( isOver(mouse) && bActive ){
+            } else if ( bActive ){
+            /*********************************************************/
+            /*********************************************************/
                 for (int i = 0; i < 4; i++){
                     textureCorners[i] += mouse-mouseLast;
                 }
@@ -1608,6 +1614,28 @@ float ofxPatch::getLowestYCoord(){
         
         if(lowestCoord > textureCorners[i].y){
             lowestCoord = textureCorners[i].y;
+        }
+    }
+    return lowestCoord;
+}
+
+float ofxPatch::getHighestXCoord(){
+    int highestCoord = 0;
+    for(int i = 0; i < 4; i++){
+        if(highestCoord < textureCorners[i].x){
+            highestCoord = textureCorners[i].x;
+        }
+    }
+    return highestCoord;
+}
+
+
+float ofxPatch::getLowestXCoord(){
+    int lowestCoord = 10000;
+    for(int i = 0; i < 4; i++){
+        
+        if(lowestCoord > textureCorners[i].x){
+            lowestCoord = textureCorners[i].x;
         }
     }
     return lowestCoord;

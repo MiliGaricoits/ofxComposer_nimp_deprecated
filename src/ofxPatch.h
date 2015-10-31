@@ -95,6 +95,8 @@ public:
     // nico Drag
     float           getHighestYCoord();
     float           getLowestYCoord();
+    float           getHighestXCoord();
+    float           getLowestXCoord();
     
 private:
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix

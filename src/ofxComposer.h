@@ -41,11 +41,19 @@ public:
         }
     }
     
-    // nico ScrollBar
-    void    scrollBarSetup();
-    
 protected:
     map<int,ofxPatch*>  patches;
+    int     getPatchesLowestCoord();
+    int     getPatchesHighestCoord();
+    int     getPatchesLeftMostCoord();
+    int     getPatchesRightMostCoord();
+    
+    void    movePatches(ofVec3f diff);
+    void    scalePatches(float yDiff);
+    void    setDraggingGrip(bool dragging);
+    void    setDraggingHGrip(bool dragging);
+    bool    isDraggingGrip();
+    bool    isDraggingHGrip();
     
 private:
     // Events
@@ -60,10 +68,6 @@ private:
     void    activePatch( int _nID );
     bool    connect( int _fromID, int _toID, int _nTexture );
     
-    //nico scrollBar
-    void    updateScrollBar();
-    int     getPatchesLowestCoord();
-    int     getPatchesHighestCoord();
     // nico Auxiliar Zoom y Drag
     static const float ZOOM_UNIT = 1.f;
     static const float ZOOM_SENSITIVITY = .001f;
@@ -90,21 +94,10 @@ private:
     bool    bEditMode;
     bool    bGLEditorPatch, bHelp;
     
-    // nico ScrollBar empieza
-    /* Display parameters for the panel */
-    float gap;
-    float margin;
-    float scrollBarWidth;
-    
-    float panelWidth;
-    float panelHeight;
-    bool isScrollBarVisible;
-    ofRectangle scrollBarRectangle;
-    ofRectangle gripRectangle;
-    bool isDraggingGrip;
-    bool isMouseOverGrip;
-    int mousePreviousY;
-    // nico ScrollBar fin
+    // nico scroll bar
+    bool draggingGrip;
+    bool draggingHGrip;
+    // nico scroll bar fin
     
 };
 

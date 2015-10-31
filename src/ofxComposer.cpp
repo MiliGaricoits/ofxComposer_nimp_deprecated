@@ -267,29 +267,6 @@ void ofxComposer::closePatch( int &_nID ){
     }
 }
 
-// nico ScrollBar
-void ofxComposer::scrollBarSetup(){
-    /*
-     The "panel" is a frame. This frame contains the displayed images, and the scroll bar.
-     The scroll bar contains a "grip". The user can drag the grip with the mouse.
-     */
-    
-    gap = 10.f;               // Distance between rectangles, and between rectangles and scroll bar
-    margin = 20.f;            // Distance between the edge of the screen and the panel frame
-    scrollBarWidth = 20.f;
-    
-    // Now two rectangles, for the scroll bar and his grip placements
-    // Coordinates are relative to the panel coordinates, not to the screen coordinates
-    // This is a first initialisation, but we don't know many things about these placements at this state
-    scrollBarRectangle = ofRectangle(ofGetWidth() - (margin*2) - scrollBarWidth, 0, scrollBarWidth, 0);
-    gripRectangle = ofRectangle(ofGetWidth() - (margin*2) - scrollBarWidth, 0, scrollBarWidth, 0);
-    
-    isDraggingGrip = false; // true when the user is moving the grip
-    isMouseOverGrip = false; // true when the mouse is over the grip
-    
-    updateScrollBar();
-}
-
 //-------------------------------------------------------------- LOOP
 void ofxComposer::update(){
     for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -317,8 +294,6 @@ void ofxComposer::update(){
 #endif
     }
     
-    //nico scrollBar
-//    updateScrollBar();
 }
 
 
@@ -395,28 +370,6 @@ void ofxComposer::draw(){
     ofPopStyle();
     ofPopView();
     
-    
-    
-    // nico ScrollBar begin
-    // Add a translation to bring the panel to the good position
-    ofPushMatrix();
-        ofTranslate(margin, margin, 0);
-    // Draw the scroll bar, is needed
-        if (isScrollBarVisible) {
-            ofSetColor(110);
-            ofRect(scrollBarRectangle);
-            if (isDraggingGrip || isMouseOverGrip) {
-                ofSetColor(230);
-            } else {
-                ofSetColor(180);
-            }
-            ofRect(gripRectangle);
-        }
-    
-    // Remove the translation added at the begining
-    ofPopMatrix();
-    // ScrollBar end
-    
 }
 
 //-------------------------------------------------------------- EVENTS
@@ -474,17 +427,6 @@ void ofxComposer::_mouseMoved(ofMouseEventArgs &e){
             break;
         }
     }
-    
-    // nico scrollBar begin
-    if (isScrollBarVisible) {
-        ofRectangle r = gripRectangle;
-        r.translate(margin, margin); // This translation because the coordinates of the grip are relative to the panel, but the mouse position is relative to the screen
-        isMouseOverGrip = r.inside(e.x, e.y);
-    } else {
-        isMouseOverGrip = false;
-    }
-    // nico ScrollBar end
-    
 }
 
 void ofxComposer::activePatch( int _nID ){
@@ -535,18 +477,6 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
             }
         }
     }
-    
-    //nico Scrollbar begin
-    // Check if the click occur on the grip
-    if (isScrollBarVisible) {
-        ofRectangle r = gripRectangle;
-        r.translate(margin, margin); // This translation because the coordinates of the grip are relative to the panel, but the mouse position is relative to the screen
-        if (r.inside(e.x, e.y)) {
-            isDraggingGrip = true;
-            mousePreviousY = e.y;
-        }
-    }
-    // scroll bar end
 }
 
 
@@ -555,56 +485,16 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouse = ofVec3f(e.x, e.y,0);
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
-    
-    // nico drag Inicio
-    if (isScrollBarVisible && isDraggingGrip) {
-        // Move the grip according to the mouse displacement
-        int dy = e.y - mousePreviousY;
-        mousePreviousY = e.y;
-        gripRectangle.y += dy;
-        
-        // si no estoy en ninguno de los 2 bordes, muevo los patches
-        if(!(gripRectangle.y < 0) && !(gripRectangle.getBottom() > scrollBarRectangle.getBottom())){
-            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-                ofVec3f aux = ofVec3f(0, mouseLast.y - mouse.y, 0);
-                it->second->moveDiff(aux);
-            }
-        }
-        
-        // Check if the grip is still in the scroll bar
-        if (gripRectangle.y < 0) {
-            gripRectangle.y = 0;
-        }
-        if (gripRectangle.getBottom() > scrollBarRectangle.getBottom()) {
-            gripRectangle.y = scrollBarRectangle.getBottom() - gripRectangle.height;
-        }
-        
-    }
-    updateScrollBar();
-    // nico drag end.
-    
-    
-    /********************************************************
-     Tuve que ponerlo al principio por los return que hay abajo, no dejaban que se llegue a ejecutar el codigo
-    ********************************************************/ 
-    
-    
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !isDraggingGrip){
+    if(disabledPatches && !draggingGrip && !draggingHGrip){
         // si apreto el boton izquierdo muevo todos los nodos
         if(e.button == 0){
-            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-                it->second->moveDiff(mouse-mouseLast);
-            }
+            movePatches(mouse - mouseLast);
         }
         
         // si apreto el boton derecho, hago zoom in/out
         if(e.button == 2){
-            float scaleDiff = (mouse.y - mouseLast.y)*ZOOM_SENSITIVITY;
-            float scale = ZOOM_UNIT + scaleDiff;
-            for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-                it->second->scale(scale);
-            }
+            scalePatches(mouse.y - mouseLast.y);
         }
     } else {
         int activePatch = isAnyPatchHit(mouse.x, mouse.y);
@@ -695,9 +585,6 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
         }
     }
     
-    // nico ScrollBar
-    isDraggingGrip = false;
-    
     // nico zoom/drag
     disabledPatches = false;
     
@@ -736,49 +623,20 @@ int ofxComposer::isAnyPatchHit(float x, float y){
     return isAnyHit;
 }
 
-
-//nico scrollbar begin
-void ofxComposer::updateScrollBar(){
-    // The size of the panel. All the screen except margins
-    panelWidth = ofGetWidth() - margin * 2;
-    panelHeight = ofGetHeight() - margin * 2;
-    
-    gripRectangle.x = scrollBarRectangle.x; // Also adjust the grip x coordinate
-    int lowestCoord = getPatchesLowestCoord();  // La coordenada mas baja de un patch
-    int highestCoord = getPatchesHighestCoord(); // La coordenada mas alta de un patch
-    
-    // Muestro la scrollBar
-    isScrollBarVisible = true;
-    // La altura del scroll bar = a la altura de la pantalla
-    scrollBarRectangle.height = panelHeight;
-
-    // estos ratios son la proporcion de lo que hay que dibujar que esta por encima y por debajo de lo que se muestra
-    // al ser ratio, van de 0 a 1, y calculo dependiendo el caso
-    float gripSizeRatioLow = 1.f;
-    float gripSizeRatioHigh = 1.f;
-    if ( (lowestCoord < 0)  && (highestCoord > panelHeight) ) {
-        gripSizeRatioHigh = (float)panelHeight / (panelHeight - (float)lowestCoord);
-        gripSizeRatioLow = (float)panelHeight / ( (float)highestCoord );
-    } else if ( lowestCoord < 0 ){
-        gripSizeRatioHigh = (float)panelHeight / (panelHeight - (float)lowestCoord);
-    } else if ( highestCoord > panelHeight ) {
-        gripSizeRatioLow = (float)panelHeight / ( (float)highestCoord );
-    }
-
-    
-    // La altura del grip es el panel por los ratios fuera de la pantalla
-    gripRectangle.height = panelHeight * gripSizeRatioLow * gripSizeRatioHigh;
-    
-    // La 'y' del grip esta en la scrollbar por la relacion de lo que queda por arriba de la pantalla
-    gripRectangle.y = (1-gripSizeRatioHigh)*scrollBarRectangle.height;
-    
-    // Si las alturas del grip y del scroll son iguales, es porque tengo todo a la vista
-    // hago que la resta sea menor a 2 para dejar un margen, si no, queda a veces la barra cuando no es necesario
-    if( (scrollBarRectangle.height - gripRectangle.height) < 2 ){
-        isScrollBarVisible = false;
+void ofxComposer::movePatches(ofVec3f diff){
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        it->second->moveDiff(diff);
     }
 }
-// nico scrollbar end
+
+void ofxComposer::scalePatches(float yDiff){
+    float scale = ZOOM_UNIT + yDiff*ZOOM_SENSITIVITY;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        it->second->scale(scale);
+    }
+}
+
+//nico scrollbar begin
 int ofxComposer::getPatchesLowestCoord(){
     int coordMasBaja = 1000;
     for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -798,4 +656,39 @@ int ofxComposer::getPatchesHighestCoord(){
     return coordMasAlta;
 }
 
+int ofxComposer::getPatchesLeftMostCoord(){
+    int coordMasIzq = 1000;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(coordMasIzq > it->second->getLowestXCoord()){
+            coordMasIzq = it->second->getLowestXCoord();
+        }
+    }
+    return coordMasIzq - 30;
+}
+int ofxComposer::getPatchesRightMostCoord(){
+    int coordMasDer = -1;
+    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(coordMasDer < it->second->getHighestXCoord()){
+            coordMasDer = it->second->getHighestXCoord();
+        }
+    }
+    return coordMasDer;
+}
+// nico scrollbar end
 
+/************************************** GETTERS AND SETTERS ******************************/
+bool ofxComposer::isDraggingGrip(){
+    return draggingGrip;
+}
+
+void ofxComposer::setDraggingGrip(bool dragging){
+    draggingGrip = dragging;
+}
+
+bool ofxComposer::isDraggingHGrip(){
+    return draggingHGrip;
+}
+
+void ofxComposer::setDraggingHGrip(bool dragging){
+    draggingHGrip = dragging;
+}
