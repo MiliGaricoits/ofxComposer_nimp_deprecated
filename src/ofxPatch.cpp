@@ -414,7 +414,13 @@ void ofxPatch::draw(){
                     ofFill();
                 }
                 else {
-                    ofLine(outPut[i].pos, outPut[i].to->pos);
+                    ofPolyline line;
+                    line.addVertex(outPut[i].pos);
+                    line.addVertex(outPut[i].pos + 50);
+                    line.addVertex(outPut[i].to->pos);
+                    line.draw();
+                    ofCircle(outPut[i].pos+50, 4);
+                    //ofLine(outPut[i].pos, outPut[i].to->pos);
                 }
                 //
                 ofCircle(outPut[i].to->pos, 3);
