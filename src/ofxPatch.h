@@ -31,6 +31,8 @@ struct LinkDot{
     int         nTex;
     int         toId;
     ofxShaderObj *toShader;
+    vector<ofPoint> path_coorners;
+    ofPolyline  path_line;
 };
 
 class ofxPatch{
@@ -59,11 +61,13 @@ public:
     GLfloat*        getGlMatrix() { return glMatrix; };
     string          getFrag();
     //string        getVert();
+    
     //mili
     ofPolyline      getCoorners();
     ofRectangle     getBox() { return box; };
     void            setLinkType(nodeLinkType type);
     //
+    
     ofTexture&      getTextureReference();
     ofxShaderObj*   getShader(){ if (getType() == "ofShader") return shader; else return NULL; };
     ofPoint&        getOutPutPosition(){ return outPutPos; };
@@ -71,7 +75,7 @@ public:
     void            move(ofPoint _pos);
     void            scale(float _scale);
     void            rotate(float _angle);
-    
+
     void            update();
     void            draw();
     
@@ -166,7 +170,8 @@ private:
     
     //mili
     nodeVideoInterface *videoInterface;
-    nodeLinkType linkType;
+    nodeLinkType    linkType;
+    int             selectedLinkPath;
     //
 };
 

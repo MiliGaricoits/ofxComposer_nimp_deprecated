@@ -402,7 +402,7 @@ void ofxPatch::draw(){
         //
         for (int i = 0; i < outPut.size(); i++){
             if (outPut[i].to != NULL){
-                ofSetColor(150);
+                //ofSetColor(150);
                 ofFill();
                 ofCircle(outPut[i].pos, 3);
                 //mili - curved lines
@@ -414,15 +414,48 @@ void ofxPatch::draw(){
                     ofFill();
                 }
                 else {
-                    ofPolyline line;
+                    
+                    /*outPut[i].path_coorners.clear();
+                    outPut[i].path_coorners.push_back(outPut[i].pos + 10);
+                    outPut[i].path_coorners.push_back(outPut[i].pos - 50);
+                    outPut[i].path_coorners.push_back(outPut[i].pos + 70);*/
+                    
+                    if (outPut[i].path_coorners.size() > 0) {
+                        
+                        //ofLine(outPut[i].pos, outPut[i].path_coorners[0]);
+                        ofNoFill();
+                        for(int j = 1; j < outPut[i].path_coorners.size(); j++){
+                            
+                            
+                            ofCircle( outPut[i].path_coorners[j-1], 4);
+                            //ofLine(outPut[i].path_coorners[j-1],outPut[i].path_coorners[j]);
+                        }
+                        ofCircle( outPut[i].path_coorners[outPut[i].path_coorners.size()-1], 4);
+                        //ofLine(outPut[i].to->pos, outPut[i].path_coorners[outPut[i].path_coorners.size()-1]);
+                    }
+                    //else {
+                      //  ofLine(outPut[i].pos, outPut[i].to->pos);
+                    //}
+                    
+                    outPut[i].path_line.clear();
+                    outPut[i].path_line.addVertex(outPut[i].pos);
+                    if (outPut[i].path_coorners.size() > 0)
+                        outPut[i].path_line.addVertices(outPut[i].path_coorners);
+                    outPut[i].path_line.addVertex(outPut[i].to->pos);
+                    outPut[i].path_line.draw();
+                    
+                    ofFill();
+                    
+                    /*ofPolyline line;
                     line.addVertex(outPut[i].pos);
                     line.addVertex(outPut[i].pos + 50);
                     line.addVertex(outPut[i].to->pos);
                     line.draw();
-                    ofCircle(outPut[i].pos+50, 4);
+                    ofCircle(outPut[i].pos+50, 4);*/
                     //ofLine(outPut[i].pos, outPut[i].to->pos);
                 }
                 //
+                
                 ofCircle(outPut[i].to->pos, 3);
             }
         }
@@ -781,12 +814,55 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
                 
             }
         }
+        
+        //mili
+        
+        bool overDot = false;
+        for (int i = 0; i < outPut.size() and !overDot; i++){
+            
+            for (int j = 0; j < outPut[i].path_coorners.size(); j++){
+            
+                if ( ofDist(e.x, e.y, outPut[i].path_coorners[j].x, outPut[i].path_coorners[j].y) <= 10 ){
+                    selectedLinkPath = j;
+                    overDot = true;
+                }
+            }
+            
+            if (!overDot and linkType == PATH_LINKS and outPut.size() > 0){
+                
+                vector<ofPoint> coorners = outPut[i].path_line.getVertices();
+                int addNew = -1;
+                
+                for (int j = 0; j < coorners.size(); j++){
+                    int next = (j+1)%coorners.size();
+                    
+                    ofVec2f AtoM = mouse - coorners[j];
+                    ofVec2f AtoB = coorners[next] - coorners[j];
+                    
+                    float a = atan2f(AtoM.x, AtoM.y);
+                    float b = atan2f(AtoB.x, AtoB.y);
+                    
+                    if ( abs(a - b) < 0.01) {
+                        addNew = next;
+                    }
+                }
+                
+                if (addNew >= 0) {
+                    if (outPut[i].path_coorners.size() == 0)
+                        outPut[i].path_coorners.push_back(mouse);
+                    else if (addNew == 0)
+                        outPut[i].path_coorners.insert(outPut[i].path_coorners.begin(), mouse);
+                    else
+                        outPut[i].path_coorners.insert(outPut[i].path_coorners.begin()+(addNew-1), mouse);
+                }
+            }
+        }
     }
 }
 
 void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
     // nico
-    if(disabledPatch){
+    if(disabledPatch and selectedLinkPath == -1){
         return;
     }
     //
@@ -887,6 +963,13 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 }
             }
         }
+        
+        //mili
+        /*if (selectedLinkPath >= 0) {
+            
+            outPut[0].path_coorners[selectedLinkPath] = mouse;
+        }*/
+        //
     }
 }
 
@@ -902,6 +985,9 @@ void ofxPatch::_mouseReleased(ofMouseEventArgs &e){
             bUpdateMask = true;
             saveSettings();
             selectedMaskCorner = -1;
+            //mili
+            selectedLinkPath = -1;
+            //
         }
     }
 }
