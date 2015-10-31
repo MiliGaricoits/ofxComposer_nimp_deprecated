@@ -41,6 +41,8 @@ ofxPatch::ofxPatch(){
     //mili
     x           = 0;
     y           = 0;
+    selectedLink = -1;
+    selectedLinkPath = -1;
     //
     
     //nico
@@ -824,6 +826,7 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
             
                 if ( ofDist(e.x, e.y, outPut[i].path_coorners[j].x, outPut[i].path_coorners[j].y) <= 10 ){
                     selectedLinkPath = j;
+                    selectedLink = i;
                     overDot = true;
                 }
             }
@@ -862,7 +865,7 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
 
 void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
     // nico
-    if(disabledPatch and selectedLinkPath == -1){
+    if(disabledPatch and selectedLink == -1 and selectedLinkPath == -1){
         return;
     }
     //
@@ -965,10 +968,10 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
         }
         
         //mili
-        /*if (selectedLinkPath >= 0) {
+        if (selectedLink >= 0 and selectedLinkPath >= 0) {
             
-            outPut[0].path_coorners[selectedLinkPath] = mouse;
-        }*/
+            outPut[selectedLink].path_coorners[selectedLinkPath] = mouse;
+        }
         //
     }
 }
@@ -987,6 +990,7 @@ void ofxPatch::_mouseReleased(ofMouseEventArgs &e){
             selectedMaskCorner = -1;
             //mili
             selectedLinkPath = -1;
+            selectedLink = -1;
             //
         }
     }

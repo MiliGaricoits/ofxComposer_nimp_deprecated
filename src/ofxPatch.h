@@ -172,6 +172,7 @@ private:
     nodeVideoInterface *videoInterface;
     nodeLinkType    linkType;
     int             selectedLinkPath;
+    int             selectedLink;
     //
 };
 
