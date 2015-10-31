@@ -844,7 +844,13 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 
                 // Drag all the surface
                 //
-            } else if ( isOver(mouse) && bActive ){
+             
+            /*********************************************************/
+            /****** CAMBIO PARA QUE FUNCIONE EL DRAG DIFERENTE *******/
+//            } else if ( isOver(mouse) && bActive ){
+            } else if ( bActive ){
+            /*********************************************************/
+            /*********************************************************/
                 for (int i = 0; i < 4; i++){
                     textureCorners[i] += mouse-mouseLast;
                 }
