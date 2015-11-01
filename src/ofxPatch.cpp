@@ -933,7 +933,7 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
             /*********************************************************/
             /****** CAMBIO PARA QUE FUNCIONE EL DRAG DIFERENTE *******/
 //            } else if ( isOver(mouse) && bActive ){
-            } else if ( bActive ){
+            } else if ( bActive && (selectedLinkPath == -1) ){
             /*********************************************************/
             /*********************************************************/
                 for (int i = 0; i < 4; i++){

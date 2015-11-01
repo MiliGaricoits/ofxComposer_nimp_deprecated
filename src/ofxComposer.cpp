@@ -486,7 +486,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !draggingGrip && !draggingHGrip){
+    if(disabledPatches && !draggingGrip && !draggingHGrip && false){
         // si apreto el boton izquierdo muevo todos los nodos
         if(e.button == 0){
             movePatches(mouse - mouseLast);
