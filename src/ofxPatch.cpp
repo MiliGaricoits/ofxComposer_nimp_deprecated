@@ -305,15 +305,17 @@ void ofxPatch::draw(){
     
     if ( bEditMode || bVisible ) {
         
-        if (bActive || !bEditMode || (type == "ofxGLEditor"))
+        float lineWidth = 1.f;
+        if (bActive || !bEditMode || (type == "ofxGLEditor")){
             color.lerp(ofColor(255,255), 0.1);
-        else
+            lineWidth = 5.f;
+        } else {
             color.lerp(ofColor(200,200), 0.1);
-        
-        
+        }
         ofPushMatrix();
         glMultMatrixf(glMatrix);
         ofSetColor(color);
+        ofSetLineWidth(lineWidth);
         getTextureReference().draw(0,0);
         ofPopMatrix();
     }
