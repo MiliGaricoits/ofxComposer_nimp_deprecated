@@ -86,9 +86,6 @@ void main (void){\n\
     title->addButton('v', &bVisible, TOGGLE_BUTTON);
     ofAddListener( title->reset , this, &ofxPatch::_reMakeFrame);
     
-	ofAddListener(ofEvents().mousePressed, this, &ofxPatch::_mousePressed);
-	ofAddListener(ofEvents().mouseDragged, this, &ofxPatch::_mouseDragged);
-	ofAddListener(ofEvents().mouseReleased, this, &ofxPatch::_mouseReleased);
 	ofAddListener(ofEvents().keyPressed, this, &ofxPatch::_keyPressed);
 };
 
@@ -173,16 +170,6 @@ ofTexture& ofxPatch::getSrcTexture(){
     else 
         return maskFbo.dst->getTextureReference();
 }
-
-//mili
-ofPolyline ofxPatch::getCoorners() {
-    return textureCorners;
-}
-
-void ofxPatch::setLinkType(nodeLinkType type) {
-    linkType = type;
-}
-//
 
 ofTexture& ofxPatch::getTextureReference(){
     if (bMasking)
@@ -284,8 +271,6 @@ void ofxPatch::update(){
     //
     if (videoPlayer != NULL){
         videoPlayer->update();
-        //mili
-        videoInterface->setVideoFrame(videoPlayer->getPosition());
     } else if (videoGrabber != NULL){
             videoGrabber->update();
     } else if (shader != NULL){
@@ -324,9 +309,6 @@ void ofxPatch::draw(){
         if (title != NULL)
             title->draw();
         
-        if (type.compare("ofVideoPlayer") == 0)
-            videoInterface->draw();
-        
         if ( !bEditMask ){
             ofFill();
             // Draw dragables texture corners
@@ -339,7 +321,16 @@ void ofxPatch::draw(){
                 
                 // Draw contour Line
                 //
+                // Nico - Select many patches
+                if(bActive){
+                    ofSetLineWidth(3.f);
+                    ofSetColor(150,150,250);
+                }
+                //
                 ofLine(textureCorners[i].x, textureCorners[i].y, textureCorners[(i+1)%4].x, textureCorners[(i+1)%4].y);
+                // Nico - Select many patches
+                ofSetLineWidth(1.f);
+                //
             }
         } else {
             // Draw dragables mask corners
@@ -399,68 +390,23 @@ void ofxPatch::draw(){
         ofSetColor(255, 150);
         ofCircle(getOutPutPosition(), 5);
         ofPopStyle();
-    
+        
+/* ================================================ */
+/*          this code was moved to patch.cpp        */
+/* ================================================ */
         // Draw the links
         //
-        for (int i = 0; i < outPut.size(); i++){
+        /*for (int i = 0; i < outPut.size(); i++){
             if (outPut[i].to != NULL){
-                //ofSetColor(150);
+                ofSetColor(150);
                 ofFill();
                 ofCircle(outPut[i].pos, 3);
-                //mili - curved lines
-                if (linkType == STRAIGHT_LINKS)
-                    ofLine(outPut[i].pos, outPut[i].to->pos);
-                else if (linkType == CURVE_LINKS) {
-                    ofNoFill();
-                    ofBezier(outPut[i].pos.x, outPut[i].pos.y, outPut[i].pos.x+55, outPut[i].pos.y, outPut[i].to->pos.x-55, outPut[i].to->pos.y, outPut[i].to->pos.x, outPut[i].to->pos.y);
-                    ofFill();
-                }
-                else {
-                    
-                    /*outPut[i].path_coorners.clear();
-                    outPut[i].path_coorners.push_back(outPut[i].pos + 10);
-                    outPut[i].path_coorners.push_back(outPut[i].pos - 50);
-                    outPut[i].path_coorners.push_back(outPut[i].pos + 70);*/
-                    
-                    if (outPut[i].path_coorners.size() > 0) {
-                        
-                        //ofLine(outPut[i].pos, outPut[i].path_coorners[0]);
-                        ofNoFill();
-                        for(int j = 1; j < outPut[i].path_coorners.size(); j++){
-                            
-                            
-                            ofCircle( outPut[i].path_coorners[j-1], 4);
-                            //ofLine(outPut[i].path_coorners[j-1],outPut[i].path_coorners[j]);
-                        }
-                        ofCircle( outPut[i].path_coorners[outPut[i].path_coorners.size()-1], 4);
-                        //ofLine(outPut[i].to->pos, outPut[i].path_coorners[outPut[i].path_coorners.size()-1]);
-                    }
-                    //else {
-                      //  ofLine(outPut[i].pos, outPut[i].to->pos);
-                    //}
-                    
-                    outPut[i].path_line.clear();
-                    outPut[i].path_line.addVertex(outPut[i].pos);
-                    if (outPut[i].path_coorners.size() > 0)
-                        outPut[i].path_line.addVertices(outPut[i].path_coorners);
-                    outPut[i].path_line.addVertex(outPut[i].to->pos);
-                    outPut[i].path_line.draw();
-                    
-                    ofFill();
-                    
-                    /*ofPolyline line;
-                    line.addVertex(outPut[i].pos);
-                    line.addVertex(outPut[i].pos + 50);
-                    line.addVertex(outPut[i].to->pos);
-                    line.draw();
-                    ofCircle(outPut[i].pos+50, 4);*/
-                    //ofLine(outPut[i].pos, outPut[i].to->pos);
-                }
-                //
-                
+                ofLine(outPut[i].pos, outPut[i].to->pos);
                 ofCircle(outPut[i].to->pos, 3);
             }
-        }
+        }*/
+/* ================================================ */
+/* ================================================ */
     }
 }
 
@@ -816,50 +762,6 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
                 
             }
         }
-        
-        //mili
-        
-        bool overDot = false;
-        for (int i = 0; i < outPut.size() and !overDot; i++){
-            
-            for (int j = 0; j < outPut[i].path_coorners.size(); j++){
-            
-                if ( ofDist(e.x, e.y, outPut[i].path_coorners[j].x, outPut[i].path_coorners[j].y) <= 10 ){
-                    selectedLinkPath = j;
-                    selectedLink = i;
-                    overDot = true;
-                }
-            }
-            
-            if (!overDot and linkType == PATH_LINKS and outPut.size() > 0){
-                
-                vector<ofPoint> coorners = outPut[i].path_line.getVertices();
-                int addNew = -1;
-                
-                for (int j = 0; j < coorners.size(); j++){
-                    int next = (j+1)%coorners.size();
-                    
-                    ofVec2f AtoM = mouse - coorners[j];
-                    ofVec2f AtoB = coorners[next] - coorners[j];
-                    
-                    float a = atan2f(AtoM.x, AtoM.y);
-                    float b = atan2f(AtoB.x, AtoB.y);
-                    
-                    if ( abs(a - b) < 0.01) {
-                        addNew = next;
-                    }
-                }
-                
-                if (addNew >= 0) {
-                    if (outPut[i].path_coorners.size() == 0)
-                        outPut[i].path_coorners.push_back(mouse);
-                    else if (addNew == 0)
-                        outPut[i].path_coorners.insert(outPut[i].path_coorners.begin(), mouse);
-                    else
-                        outPut[i].path_coorners.insert(outPut[i].path_coorners.begin()+(addNew-1), mouse);
-                }
-            }
-        }
     }
 }
 
@@ -932,8 +834,8 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
              
             /*********************************************************/
             /****** CAMBIO PARA QUE FUNCIONE EL DRAG DIFERENTE *******/
-//            } else if ( isOver(mouse) && bActive ){
-            } else if ( bActive && (selectedLinkPath == -1) ){
+            //} else if ( isOver(mouse) && bActive ){
+            } else if ( bActive && (selectedLinkPath == -1) && (selectedLink == -1) ){
             /*********************************************************/
             /*********************************************************/
                 for (int i = 0; i < 4; i++){
@@ -966,13 +868,6 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 }
             }
         }
-        
-        //mili
-        if (selectedLink >= 0 and selectedLinkPath >= 0) {
-            
-            outPut[selectedLink].path_coorners[selectedLinkPath] = mouse;
-        }
-        //
     }
 }
 
@@ -988,10 +883,6 @@ void ofxPatch::_mouseReleased(ofMouseEventArgs &e){
             bUpdateMask = true;
             saveSettings();
             selectedMaskCorner = -1;
-            //mili
-            selectedLinkPath = -1;
-            selectedLink = -1;
-            //
         }
     }
 }
@@ -1060,23 +951,6 @@ void ofxPatch::_keyPressed(ofKeyEventArgs &e){
     }   
 }
 
-//mili
-void ofxPatch::_stopVideo(int &_nId) {
-    videoPlayer->stop();
-    videoPlayer->firstFrame();
-    videoInterface->setVideoState(VIDEO_STOP);
-}
-void ofxPatch::_playVideo(int &_nId) {
-    
-    if (videoInterface->getVideoState() == VIDEO_PLAY) {
-        videoPlayer->stop();
-        videoInterface->setVideoState(VIDEO_PAUSE);
-    } else {
-        videoPlayer->play();
-        videoInterface->setVideoState(VIDEO_PLAY);
-    }
-}
-
 // ------------------------------------------------------------- LOAD & SAVE
 bool ofxPatch::loadFile(string _filePath, string _configFile){ 
     bool loaded = false;
@@ -1133,11 +1007,6 @@ bool ofxPatch::loadFile(string _filePath, string _configFile){
         videoPlayer->play();
         width   = videoPlayer->getWidth();
         height  = videoPlayer->getHeight();
-        
-        //mili
-        videoInterface = new nodeVideoInterface(&box, &nId);
-        ofAddListener( videoInterface->_stop , this, &ofxPatch::_stopVideo);
-        ofAddListener( videoInterface->_play , this, &ofxPatch::_playVideo);
         
     } else if ((ext == "frag") || (ext == "FRAG") ||
                (ext == "fs") || (ext == "FS") ){

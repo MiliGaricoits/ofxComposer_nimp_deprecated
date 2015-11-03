@@ -10,7 +10,7 @@
 #define OFXCOMPOSER
 
 #include "ofMain.h"
-#include "ofxPatch.h"
+#include "patch.h"
 
 //  Comment the "define USE_OFXGLEDITOR" if you don't want to use ofxGLEditor
 //
@@ -29,20 +29,20 @@ public:
     bool    addPatchWithOutFile(string _type, ofPoint _position);
     
     int     size(){return patches.size(); };
-    ofxPatch* operator[](int _nID){ if ( (_nID != -1) && (patches[_nID] != NULL) ) return patches[_nID]; };
+    patch*  operator[](int _nID){ if ( (_nID != -1) && (patches[_nID] != NULL) ) return patches[_nID]; };
     
     void    update();
     void    draw();
     
     void    setEdit(bool _state){
         bEditMode = _state;
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             it->second->bEditMode = bEditMode;
         }
     }
     
 protected:
-    map<int,ofxPatch*>  patches;
+    map<int,patch*>  patches;
     int     getPatchesLowestCoord();
     int     getPatchesHighestCoord();
     int     getPatchesLeftMostCoord();

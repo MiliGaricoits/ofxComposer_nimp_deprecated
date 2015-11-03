@@ -41,7 +41,7 @@ public:
     ofxPatch();
     ~ofxPatch();
 
-    bool            loadFile(string _filePath, string _configFile = "none");
+    virtual bool    loadFile(string _filePath, string _configFile = "none");
     bool            loadType(string _type, string _configFile = "none");
     
     bool            loadSettings(int _nTag, string _configFile = "none");
@@ -61,12 +61,6 @@ public:
     GLfloat*        getGlMatrix() { return glMatrix; };
     string          getFrag();
     //string        getVert();
-    
-    //mili
-    ofPolyline      getCoorners();
-    ofRectangle     getBox() { return box; };
-    void            setLinkType(nodeLinkType type);
-    //
     
     ofTexture&      getTextureReference();
     ofxShaderObj*   getShader(){ if (getType() == "ofShader") return shader; else return NULL; };
@@ -102,7 +96,8 @@ public:
     float           getHighestXCoord();
     float           getLowestXCoord();
     
-private:
+protected:
+    
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix
     void            doScreenToSurfaceMatrix();      // Update the ScreenToSurface transformation matrix
     void            doGaussianElimination(float *input, int n); // This is used making the matrix
@@ -114,10 +109,6 @@ private:
     void            _mouseReleased(ofMouseEventArgs &e);
     void            _keyPressed(ofKeyEventArgs &e); 
     void            _reMakeFrame( int &_nId );
-    //mili
-    void            _stopVideo( int &_nId );
-    void            _playVideo( int &_nId );
-    //
     
     // nico zoom/drag
     bool            disabledPatch;
@@ -126,9 +117,8 @@ private:
     // 5 Sources Objects and one interface to rule them all
     //
     ofTexture&      getSrcTexture();
-    
-    ofImage         *image;
     ofVideoPlayer   *videoPlayer;
+    ofImage         *image;
     ofVideoGrabber  *videoGrabber;
     ofxShaderObj    *shader;
     ofTexture       *texture;
@@ -169,8 +159,6 @@ private:
     bool            bUpdateCoord;
     
     //mili
-    nodeVideoInterface *videoInterface;
-    nodeLinkType    linkType;
     int             selectedLinkPath;
     int             selectedLink;
     //

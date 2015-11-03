@@ -94,7 +94,7 @@ void ofxComposer::load(string _fileConfig){
         // Load each surface present on the xml file
         //
         for(int i = 0; i < totalPatchs ; i++){
-            ofxPatch *nPatch = new ofxPatch();
+            patch *nPatch = new patch();
             bool loaded = nPatch->loadSettings(i, "config.xml");
             
             if (loaded){
@@ -153,7 +153,7 @@ void ofxComposer::save(string _fileConfig ){
         configFile = _fileConfig;
     }
     
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         it->second->saveSettings(configFile);
     }
 }
@@ -161,7 +161,7 @@ void ofxComposer::save(string _fileConfig ){
 bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
     bool loaded = false;
     
-    ofxPatch *nPatch = new ofxPatch();
+    patch *nPatch = new patch();
     loaded = nPatch->loadFile( _filePath, "config.xml" );
     
     if ( loaded ){
@@ -178,7 +178,7 @@ bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
 bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
     bool loaded = false;
     
-    ofxPatch *nPatch = new ofxPatch();
+    patch *nPatch = new patch();
     loaded = nPatch->loadType( _type, "config.xml" );
     
     if ( loaded ){
@@ -232,7 +232,7 @@ void ofxComposer::closePatch( int &_nID ){
         
         // Delete links Dependences
         //
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             for (int j = it->second->outPut.size()-1; j >= 0 ; j--){
                 if ( it->second->outPut[j].toId == _nID){
                     it->second->outPut.erase( it->second->outPut.begin() + j );
@@ -269,7 +269,7 @@ void ofxComposer::closePatch( int &_nID ){
 
 //-------------------------------------------------------------- LOOP
 void ofxComposer::update(){
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         it->second->update();
     }
     
@@ -319,7 +319,7 @@ void ofxComposer::draw(){
     
     //  Draw Patches
     //
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         it->second->draw();
     }
     
@@ -421,7 +421,7 @@ void ofxComposer::_keyPressed(ofKeyEventArgs &e){
 void ofxComposer::_mouseMoved(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
-    for(map<int,ofxPatch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
+    for(map<int,patch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
         if (rit->second->isOver(mouse)){
             activePatch( rit->first );
             break;
@@ -433,7 +433,7 @@ void ofxComposer::activePatch( int _nID ){
     if ( (_nID != -1) && (patches[_nID] != NULL) ){
         selectedID = _nID;
         
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             if (it->first == _nID)
                 it->second->bActive = true;
             else
@@ -453,7 +453,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     }
 
     selectedDot = -1;    
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
             selectedDot = it->first;
             it->second->bActive = false;
@@ -465,7 +465,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     }
     
     if (selectedDot == -1){
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
                 selectedID = it->first;
 #ifdef USE_OFXGLEDITOR
@@ -501,7 +501,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         if (activePatch == -1)
             return;
         
-        ofxPatch* patch = patches[activePatch];
+        patch* p = patches[activePatch];
         verticalAlign1 = 0;
         verticalAlign2 = 0;
         verticalAlign3 = 0;
@@ -509,31 +509,31 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         horizontalAlign2 = 0;
         horizontalAlign3 = 0;
         
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             
-            if (it->second != patch) {
-                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[0].x or
-                    (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[0].x) {
-                    verticalAlign1 = patch->getCoorners()[0].x ;
+            if (it->second != p) {
+                if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[0].x or
+                    (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[0].x) {
+                    verticalAlign1 = p->getCoorners()[0].x ;
                 }
-                if ((int)(it->second->getCoorners()[0].x + it->second->getBox().width/2) == (int)(patch->getCoorners()[0].x + patch->getBox().width/2)) {
-                    verticalAlign2 = (patch->getCoorners()[0].x + patch->getBox().width/2);
+                if ((int)(it->second->getCoorners()[0].x + it->second->getBox().width/2) == (int)(p->getCoorners()[0].x + p->getBox().width/2)) {
+                    verticalAlign2 = (p->getCoorners()[0].x + p->getBox().width/2);
                 }
-                if ((int)it->second->getCoorners()[0].x == (int)patch->getCoorners()[1].x or
-                    (int)it->second->getCoorners()[1].x == (int)patch->getCoorners()[1].x ) {
-                    verticalAlign3 = patch->getCoorners()[1].x;
+                if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[1].x or
+                    (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[1].x ) {
+                    verticalAlign3 = p->getCoorners()[1].x;
                 }
                 
-                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[1].y or
-                    (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[1].y) {
-                    horizontalAlign1 = patch->getCoorners()[1].y ;
+                if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[1].y or
+                    (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[1].y) {
+                    horizontalAlign1 = p->getCoorners()[1].y ;
                 }
-                if ((int)(it->second->getCoorners()[1].y + it->second->getBox().height/2) == (int)(patch->getCoorners()[1].y + patch->getBox().height/2)) {
-                    horizontalAlign2 = (patch->getCoorners()[1].y + patch->getBox().height/2);
+                if ((int)(it->second->getCoorners()[1].y + it->second->getBox().height/2) == (int)(p->getCoorners()[1].y + p->getBox().height/2)) {
+                    horizontalAlign2 = (p->getCoorners()[1].y + p->getBox().height/2);
                 }
-                if ((int)it->second->getCoorners()[1].y == (int)patch->getCoorners()[3].y or
-                    (int)it->second->getCoorners()[3].y == (int)patch->getCoorners()[3].y ) {
-                    horizontalAlign3 = patch->getCoorners()[3].y;
+                if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[3].y or
+                    (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[3].y ) {
+                    horizontalAlign3 = p->getCoorners()[3].y;
                 }
                 
                 if(verticalAlign1 or verticalAlign2 or verticalAlign3 or horizontalAlign1 or horizontalAlign2 or horizontalAlign3)
@@ -548,7 +548,7 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
     if (selectedDot != -1){
-        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
             if ((selectedDot != it->first) &&                   // If not him self
                 (it->second->getType() == "ofShader") &&   // The target it´s a shader
                 (it->second->bEditMode) &&               // And we are in editMode and not on maskMode
@@ -614,7 +614,7 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 int ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
     int isAnyHit = -1;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
         if(it->second->isOver(*point)){
             isAnyHit = it->first;
         }
@@ -624,14 +624,14 @@ int ofxComposer::isAnyPatchHit(float x, float y){
 }
 
 void ofxComposer::movePatches(ofVec3f diff){
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         it->second->moveDiff(diff);
     }
 }
 
 void ofxComposer::scalePatches(float yDiff){
     float scale = ZOOM_UNIT + yDiff*ZOOM_SENSITIVITY;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         it->second->scale(scale);
     }
 }
@@ -639,7 +639,7 @@ void ofxComposer::scalePatches(float yDiff){
 //nico scrollbar begin
 int ofxComposer::getPatchesLowestCoord(){
     int coordMasBaja = 1000;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasBaja > it->second->getLowestYCoord()){
             coordMasBaja = it->second->getLowestYCoord();
         }
@@ -648,7 +648,7 @@ int ofxComposer::getPatchesLowestCoord(){
 }
 int ofxComposer::getPatchesHighestCoord(){
     int coordMasAlta = -1;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasAlta < it->second->getHighestYCoord()){
             coordMasAlta = it->second->getHighestYCoord();
         }
@@ -658,7 +658,7 @@ int ofxComposer::getPatchesHighestCoord(){
 
 int ofxComposer::getPatchesLeftMostCoord(){
     int coordMasIzq = 1000;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasIzq > it->second->getLowestXCoord()){
             coordMasIzq = it->second->getLowestXCoord();
         }
@@ -667,7 +667,7 @@ int ofxComposer::getPatchesLeftMostCoord(){
 }
 int ofxComposer::getPatchesRightMostCoord(){
     int coordMasDer = -1;
-    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasDer < it->second->getHighestXCoord()){
             coordMasDer = it->second->getHighestXCoord();
         }
