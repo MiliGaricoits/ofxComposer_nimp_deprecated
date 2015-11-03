@@ -78,6 +78,13 @@ private:
     // mili align nodes
     int verticalAlign1, verticalAlign2, verticalAlign3, horizontalAlign1, horizontalAlign2, horizontalAlign3;
     //
+    
+    // nico multiple select
+    ofRectangle multipleSelectRectangle;
+    int     multipleSelectFromX;
+    int     multipleSelectFromY;
+    void    multipleSelectAndReset();
+    
 
 #ifdef USE_OFXGLEDITOR
 	ofxGLEditor editor;

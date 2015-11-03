@@ -75,6 +75,10 @@ ofxComposer::ofxComposer(){
     verticalAlign2 = 0;
     horizontalAlign1 = 0;
     horizontalAlign2 = 0;
+    
+    // nico multipleSelect
+    multipleSelectFromX = 0;
+    multipleSelectFromY = 0;
 }
 
 void ofxComposer::load(string _fileConfig){
@@ -365,10 +369,17 @@ void ofxComposer::draw(){
     
     ofDisableBlendMode();
     ofEnableAlphaBlending();
-    
+
     ofPopMatrix();
     ofPopStyle();
     ofPopView();
+    
+    
+    // nico multipleSelect
+    ofPushMatrix();
+        ofNoFill();
+        ofRect(multipleSelectRectangle);
+    ofPopMatrix();
     
 }
 
@@ -421,12 +432,12 @@ void ofxComposer::_keyPressed(ofKeyEventArgs &e){
 void ofxComposer::_mouseMoved(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
-    for(map<int,patch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
-        if (rit->second->isOver(mouse)){
-            activePatch( rit->first );
-            break;
-        }
-    }
+//    for(map<int,ofxPatch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
+//        if (rit->second->isOver(mouse)){
+//            activePatch( rit->first );
+//            break;
+//        }
+//    }
 }
 
 void ofxComposer::activePatch( int _nID ){
@@ -445,37 +456,55 @@ void ofxComposer::activePatch( int _nID ){
 void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
+    int idPatchHit = isAnyPatchHit(e.x, e.y);
     // nico zoom/drag
-    if(isAnyPatchHit(e.x, e.y) == -1){
+    if(idPatchHit == -1){
         disabledPatches = true;
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            it->second->bActive = false;
+        }
     }else{
         disabledPatches = false;
-    }
-
-    selectedDot = -1;    
-    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-        if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
-            selectedDot = it->first;
-            it->second->bActive = false;
-            selectedID = -1;
-        }
-        
-        //nico zoom/drag
-        it->second->setDisablePatch(disabledPatches);
-    }
-    
-    if (selectedDot == -1){
         for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-            if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
-                selectedID = it->first;
-#ifdef USE_OFXGLEDITOR
-                //if (bGLEditorPatch
-                if ((it->second->getType() == "ofShader")){ 
-                    editor.setText(it->second->getFrag(), 1);
-                }
-#endif
+            if(!patches.find(idPatchHit)->second->bActive){
+                activePatch(idPatchHit);
+                break;
             }
         }
+    }
+
+//    selectedDot = -1;    
+//    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+//        if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
+//            selectedDot = it->first;
+//            it->second->bActive = false;
+//            selectedID = -1;
+//        }
+//        
+//        //nico zoom/drag
+//        it->second->setDisablePatch(disabledPatches);
+//    }
+//    
+//    if (selectedDot == -1){
+//        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+//            if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
+//                selectedID = it->first;
+//#ifdef USE_OFXGLEDITOR
+//                //if (bGLEditorPatch
+//                if ((it->second->getType() == "ofShader")){ 
+//                    editor.setText(it->second->getFrag(), 1);
+//                }
+//#endif
+//            }
+//        }
+//    }
+    
+    // nico multipleSelect
+    if(disabledPatches && e.button == 0){
+        multipleSelectFromX = e.x;
+        multipleSelectFromY = e.y;
+        multipleSelectRectangle.x = e.x;
+        multipleSelectRectangle.y = e.y;
     }
 }
 
@@ -486,10 +515,16 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !draggingGrip && !draggingHGrip && false){
+    if(disabledPatches && !draggingGrip && !draggingHGrip){
         // si apreto el boton izquierdo muevo todos los nodos
+//        if(e.button == 0){
+//            movePatches(mouse - mouseLast);
+//        }
+        
+        // si es el boton izquierdo hago multiple selection
         if(e.button == 0){
-            movePatches(mouse - mouseLast);
+            multipleSelectRectangle.width = e.x - multipleSelectFromX;
+            multipleSelectRectangle.height = e.y - multipleSelectFromY;
         }
         
         // si apreto el boton derecho, hago zoom in/out
@@ -498,50 +533,46 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         }
     } else {
         int activePatch = isAnyPatchHit(mouse.x, mouse.y);
-        if (activePatch == -1)
-            return;
+        if (activePatch != -1) {
         
-        patch* p = patches[activePatch];
-        verticalAlign1 = 0;
-        verticalAlign2 = 0;
-        verticalAlign3 = 0;
-        horizontalAlign1 = 0;
-        horizontalAlign2 = 0;
-        horizontalAlign3 = 0;
-        
-        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            patch* p = patches[activePatch];
+            verticalAlign1 = 0;
+            verticalAlign2 = 0;
+            verticalAlign3 = 0;
+            horizontalAlign1 = 0;
+            horizontalAlign2 = 0;
+            horizontalAlign3 = 0;
             
-            if (it->second != p) {
-                if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[0].x or
-                    (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[0].x) {
-                    verticalAlign1 = p->getCoorners()[0].x ;
-                }
-                if ((int)(it->second->getCoorners()[0].x + it->second->getBox().width/2) == (int)(p->getCoorners()[0].x + p->getBox().width/2)) {
-                    verticalAlign2 = (p->getCoorners()[0].x + p->getBox().width/2);
-                }
-                if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[1].x or
-                    (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[1].x ) {
-                    verticalAlign3 = p->getCoorners()[1].x;
-                }
+            for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
                 
-                if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[1].y or
-                    (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[1].y) {
-                    horizontalAlign1 = p->getCoorners()[1].y ;
+                if (it->second != p) {
+                    if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[0].x or
+                        (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[0].x) {
+                        verticalAlign1 = p->getCoorners()[0].x ;
+                    }
+                    if ((int)(it->second->getCoorners()[0].x + it->second->getBox().width/2) == (int)(p->getCoorners()[0].x + p->getBox().width/2)) {
+                        verticalAlign2 = (p->getCoorners()[0].x + p->getBox().width/2);
+                    }
+                    if ((int)it->second->getCoorners()[0].x == (int)p->getCoorners()[1].x or
+                        (int)it->second->getCoorners()[1].x == (int)p->getCoorners()[1].x ) {
+                        verticalAlign3 = p->getCoorners()[1].x;
+                    }
+                    
+                    if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[1].y or
+                        (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[1].y) {
+                        horizontalAlign1 = p->getCoorners()[1].y ;
+                    }
+                    if ((int)(it->second->getCoorners()[1].y + it->second->getBox().height/2) == (int)(p->getCoorners()[1].y + p->getBox().height/2)) {
+                        horizontalAlign2 = (p->getCoorners()[1].y + p->getBox().height/2);
+                    }
+                    if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[3].y or
+                        (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[3].y ) {
+                        horizontalAlign3 = p->getCoorners()[3].y;
+                    }
                 }
-                if ((int)(it->second->getCoorners()[1].y + it->second->getBox().height/2) == (int)(p->getCoorners()[1].y + p->getBox().height/2)) {
-                    horizontalAlign2 = (p->getCoorners()[1].y + p->getBox().height/2);
-                }
-                if ((int)it->second->getCoorners()[1].y == (int)p->getCoorners()[3].y or
-                    (int)it->second->getCoorners()[3].y == (int)p->getCoorners()[3].y ) {
-                    horizontalAlign3 = p->getCoorners()[3].y;
-                }
-                
-                if(verticalAlign1 or verticalAlign2 or verticalAlign3 or horizontalAlign1 or horizontalAlign2 or horizontalAlign3)
-                    break;
             }
         }
     }
-    
 }
 
 void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
@@ -585,9 +616,6 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
         }
     }
     
-    // nico zoom/drag
-    disabledPatches = false;
-    
     //mili - aligned nodes
     verticalAlign1 = 0;
     verticalAlign2 = 0;
@@ -596,6 +624,12 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
     horizontalAlign2 = 0;
     horizontalAlign3 = 0;
     //
+    
+    // nico multipleSelect
+    multipleSelectAndReset();
+    
+    // nico zoom/drag
+    disabledPatches = false;
 }
 
 void ofxComposer::_windowResized(ofResizeEventArgs &e){
@@ -676,6 +710,28 @@ int ofxComposer::getPatchesRightMostCoord(){
 }
 // nico scrollbar end
 
+
+// nico multiple select
+void ofxComposer::multipleSelectAndReset(){
+    if(disabledPatches){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            ofRectangle aux = multipleSelectRectangle.getIntersection(it->second->getBox());
+            if(aux.getArea() > 0){
+                it->second->bActive = true;
+            } else{
+                it->second->bActive = false;
+            }
+        }
+    }
+    
+    // reseteo el rectangulo
+    multipleSelectFromX = 0;
+    multipleSelectFromY = 0;
+    multipleSelectRectangle.x = 0;
+    multipleSelectRectangle.y = 0;
+    multipleSelectRectangle.height = 0;
+    multipleSelectRectangle.width = 0;
+}
 /************************************** GETTERS AND SETTERS ******************************/
 bool ofxComposer::isDraggingGrip(){
     return draggingGrip;
