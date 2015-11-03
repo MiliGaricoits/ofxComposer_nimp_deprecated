@@ -85,8 +85,6 @@ void main (void){\n\
     title->addButton('m', &bEditMask, TOGGLE_BUTTON);
     title->addButton('v', &bVisible, TOGGLE_BUTTON);
     ofAddListener( title->reset , this, &ofxPatch::_reMakeFrame);
-    
-	ofAddListener(ofEvents().keyPressed, this, &ofxPatch::_keyPressed);
 };
 
 ofxPatch::~ofxPatch(){
