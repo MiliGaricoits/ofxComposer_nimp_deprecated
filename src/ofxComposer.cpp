@@ -473,31 +473,31 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
         }
     }
 
-//    selectedDot = -1;    
-//    for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-//        if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
-//            selectedDot = it->first;
-//            it->second->bActive = false;
-//            selectedID = -1;
-//        }
-//        
-//        //nico zoom/drag
-//        it->second->setDisablePatch(disabledPatches);
-//    }
-//    
-//    if (selectedDot == -1){
-//        for(map<int,ofxPatch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-//            if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
-//                selectedID = it->first;
-//#ifdef USE_OFXGLEDITOR
-//                //if (bGLEditorPatch
-//                if ((it->second->getType() == "ofShader")){ 
-//                    editor.setText(it->second->getFrag(), 1);
-//                }
-//#endif
-//            }
-//        }
-//    }
+    selectedDot = -1;    
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
+            selectedDot = it->first;
+            it->second->bActive = false;
+            selectedID = -1;
+        }
+        
+        //nico zoom/drag
+        it->second->setDisablePatch(disabledPatches);
+    }
+    
+    if (selectedDot == -1){
+        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+            if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
+                selectedID = it->first;
+#ifdef USE_OFXGLEDITOR
+                //if (bGLEditorPatch
+                if ((it->second->getType() == "ofShader")){ 
+                    editor.setText(it->second->getFrag(), 1);
+                }
+#endif
+            }
+        }
+    }
     
     // nico multipleSelect
     if(disabledPatches && e.button == 0){
