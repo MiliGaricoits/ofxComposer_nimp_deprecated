@@ -96,6 +96,9 @@ public:
     float           getHighestXCoord();
     float           getLowestXCoord();
     
+    bool            isLinkHit();
+    void            setLinkHit(bool linkHit);
+    
 protected:
     
     void            doSurfaceToScreenMatrix();      // Update the SurfaceToScreen transformation matrix
@@ -162,6 +165,9 @@ protected:
     int             selectedLinkPath;
     int             selectedLink;
     //
+    
+    //nico
+    bool            linkHit;
 };
 
 #endif

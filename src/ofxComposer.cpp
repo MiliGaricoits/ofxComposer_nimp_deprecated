@@ -38,14 +38,7 @@ string helpScreen = "\n \
 ofxComposer::ofxComposer(){
     
     //  Event listeners
-    //
-    ofAddListener(ofEvents().mouseMoved, this, &ofxComposer::_mouseMoved);
-	ofAddListener(ofEvents().mousePressed, this, &ofxComposer::_mousePressed);
-	ofAddListener(ofEvents().mouseReleased, this, &ofxComposer::_mouseReleased);
-	ofAddListener(ofEvents().keyPressed, this, &ofxComposer::_keyPressed);
-    ofAddListener(ofEvents().windowResized, this, &ofxComposer::_windowResized);
-    // nico SrollBar
-    ofAddListener(ofEvents().mouseDragged, this, &ofxComposer::_mouseDragged);
+    //  defined in derived class
     
 #ifdef USE_OFXGLEDITOR       
     editor.setup("menlo.ttf");
@@ -456,56 +449,57 @@ void ofxComposer::activePatch( int _nID ){
 void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     ofVec2f mouse = ofVec2f(e.x, e.y);
     
-    int idPatchHit = isAnyPatchHit(e.x, e.y);
-    // nico zoom/drag
-    if(idPatchHit == -1){
-        disabledPatches = true;
-        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-            it->second->bActive = false;
-        }
-    }else{
-        disabledPatches = false;
-        for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-            if(!patches.find(idPatchHit)->second->bActive){
-                activePatch(idPatchHit);
-                break;
+    // si no estoy clickeando sobre ninguna de las 2 scrollbars, veo que hago
+    // si estoy clickeando una de las scrollbars, no tengo que hacer nada aca
+    if(!draggingGrip && !draggingHGrip) {
+        int idPatchHit = isAnyPatchHit(e.x, e.y);
+        // nico zoom/drag
+        if(idPatchHit == -1){
+            disabledPatches = true;
+            deactivateAllPatches();
+        }else{
+            disabledPatches = false;
+            for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                if(!patches.find(idPatchHit)->second->bActive){
+                    activePatch(idPatchHit);
+                    break;
+                }
             }
-        }
-    }
-
-    selectedDot = -1;    
-    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-        if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
-            selectedDot = it->first;
-            it->second->bActive = false;
-            selectedID = -1;
         }
         
-        //nico zoom/drag
-        it->second->setDisablePatch(disabledPatches);
-    }
-    
-    if (selectedDot == -1){
+        selectedDot = -1;
         for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-            if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
-                selectedID = it->first;
-#ifdef USE_OFXGLEDITOR
-                //if (bGLEditorPatch
-                if ((it->second->getType() == "ofShader")){ 
-                    editor.setText(it->second->getFrag(), 1);
-                }
-#endif
+            if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
+                selectedDot = it->first;
+                it->second->bActive = false;
+                selectedID = -1;
             }
+            
+        }
+        
+        if (selectedDot == -1){
+            for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+                if ((it->second->bActive) && (it->second->bEditMode) && !(it->second->bEditMask)){
+                    selectedID = it->first;
+#ifdef USE_OFXGLEDITOR
+                    //if (bGLEditorPatch
+                    if ((it->second->getType() == "ofShader")){
+                        editor.setText(it->second->getFrag(), 1);
+                    }
+#endif
+                }
+            }
+        }
+        
+        // nico multipleSelect
+        if(disabledPatches && e.button == 0){
+            multipleSelectFromX = e.x;
+            multipleSelectFromY = e.y;
+            multipleSelectRectangle.x = e.x;
+            multipleSelectRectangle.y = e.y;
         }
     }
     
-    // nico multipleSelect
-    if(disabledPatches && e.button == 0){
-        multipleSelectFromX = e.x;
-        multipleSelectFromY = e.y;
-        multipleSelectRectangle.x = e.x;
-        multipleSelectRectangle.y = e.y;
-    }
 }
 
 
@@ -515,7 +509,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
     // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if(disabledPatches && !draggingGrip && !draggingHGrip){
+    if ( disabledPatches && !draggingGrip && !draggingHGrip && (!isAnyLinkHit()) ) {
         // si apreto el boton izquierdo muevo todos los nodos
 //        if(e.button == 0){
 //            movePatches(mouse - mouseLast);
@@ -710,6 +704,11 @@ int ofxComposer::getPatchesRightMostCoord(){
 }
 // nico scrollbar end
 
+void ofxComposer::deactivateAllPatches(){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        it->second->bActive = false;
+    }
+}
 
 // nico multiple select
 void ofxComposer::multipleSelectAndReset(){
@@ -731,6 +730,15 @@ void ofxComposer::multipleSelectAndReset(){
     multipleSelectRectangle.y = 0;
     multipleSelectRectangle.height = 0;
     multipleSelectRectangle.width = 0;
+}
+
+bool ofxComposer::isAnyLinkHit(){
+    for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
+        if(it->second->isLinkHit()){
+            return true;
+        }
+    }
+    return false;
 }
 /************************************** GETTERS AND SETTERS ******************************/
 bool ofxComposer::isDraggingGrip(){

@@ -1596,3 +1596,12 @@ float ofxPatch::getLowestXCoord(){
     }
     return lowestCoord;
 }
+
+
+bool ofxPatch::isLinkHit(){
+    return linkHit;
+}
+
+void ofxPatch::setLinkHit(bool linkHit){
+    this->linkHit = linkHit;
+}

@@ -41,6 +41,8 @@ public:
         }
     }
     
+    
+    
 protected:
     map<int,patch*>  patches;
     int     getPatchesLowestCoord();
@@ -55,15 +57,17 @@ protected:
     bool    isDraggingGrip();
     bool    isDraggingHGrip();
     
-private:
     // Events
     void    _mouseMoved(ofMouseEventArgs &e);
     void    _keyPressed(ofKeyEventArgs &e);
-	void    _mousePressed(ofMouseEventArgs &e);
-	void    _mouseReleased(ofMouseEventArgs &e);
-	void    _windowResized(ofResizeEventArgs &e);
+    void    _mousePressed(ofMouseEventArgs &e);
+    void    _mouseReleased(ofMouseEventArgs &e);
+    void    _windowResized(ofResizeEventArgs &e);
     void    _mouseDragged(ofMouseEventArgs &e);
     
+    void    deactivateAllPatches();
+    
+private:
     void    closePatch( int &_nID );
     void    activePatch( int _nID );
     bool    connect( int _fromID, int _toID, int _nTexture );
@@ -84,6 +88,7 @@ private:
     int     multipleSelectFromX;
     int     multipleSelectFromY;
     void    multipleSelectAndReset();
+    bool    isAnyLinkHit();
     
 
 #ifdef USE_OFXGLEDITOR
