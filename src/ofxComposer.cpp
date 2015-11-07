@@ -653,11 +653,17 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 int ofxComposer::isAnyPatchHit(float x, float y){
     ofPoint *point = new ofPoint(x,y);
     int isAnyHit = -1;
-    for(map<int,patch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
+    for(map<int,patch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
+        if (rit->second->isOver(*point)){
+            isAnyHit = rit->first;
+            break;
+        }
+    }
+    /*for(map<int,patch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
         if(it->second->isOver(*point)){
             isAnyHit = it->first;
         }
-    }
+    }*/
     delete point;
     return isAnyHit;
 }
