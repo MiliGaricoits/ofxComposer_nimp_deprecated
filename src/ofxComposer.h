@@ -41,7 +41,9 @@ public:
         }
     }
     
-    
+    //mili
+    void setMainCanvas(ofxUISuperCanvas* gui);
+    //
     
 protected:
     map<int,patch*>  patches;
@@ -66,6 +68,10 @@ protected:
     void    _mouseDragged(ofMouseEventArgs &e);
     
     void    deactivateAllPatches();
+    
+    //mili
+    ofxUISuperCanvas* gui;
+    //
     
 private:
     void    closePatch( int &_nID );

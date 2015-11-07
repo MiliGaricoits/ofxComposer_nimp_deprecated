@@ -41,8 +41,6 @@ ofxPatch::ofxPatch(){
     //mili
     x           = 0;
     y           = 0;
-    selectedLink = -1;
-    selectedLinkPath = -1;
     //
     
     //nico
@@ -764,7 +762,7 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
 
 void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
     // nico
-    if(disabledPatch and selectedLink == -1 and selectedLinkPath == -1){
+    if(disabledPatch and !isLinkHit()){
         return;
     }
     //
@@ -832,7 +830,7 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
             /*********************************************************/
             /****** CAMBIO PARA QUE FUNCIONE EL DRAG DIFERENTE *******/
             //} else if ( isOver(mouse) && bActive ){
-            } else if ( bActive && (selectedLinkPath == -1) && (selectedLink == -1) ){
+            } else if ( bActive && !isLinkHit() ){
             /*********************************************************/
             /*********************************************************/
                 for (int i = 0; i < 4; i++){

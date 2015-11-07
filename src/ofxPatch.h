@@ -161,11 +161,6 @@ protected:
     bool            bUpdateMask;
     bool            bUpdateCoord;
     
-    //mili
-    int             selectedLinkPath;
-    int             selectedLink;
-    //
-    
     //nico
     bool            linkHit;
 };

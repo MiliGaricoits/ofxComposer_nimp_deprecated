@@ -110,6 +110,10 @@ void ofxComposer::load(string _fileConfig){
                 // Insert the new patch into the map
                 //
                 patches[nPatch->getId()] = nPatch;
+                
+                //mili
+                nPatch->setMainCanvas(this->gui);
+                //
             }
         }
         
@@ -167,6 +171,10 @@ bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
         nPatch->saveSettings();
         ofAddListener( nPatch->title->close , this, &ofxComposer::closePatch);
         patches[nPatch->getId()] = nPatch;
+        
+        //mili
+        nPatch->setMainCanvas(this->gui);
+        //
     }
     
     return loaded;
@@ -192,6 +200,9 @@ bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
 #endif
         
         patches[nPatch->getId()] = nPatch;
+        //mili
+        nPatch->setMainCanvas(this->gui);
+        //
     }
     
     return loaded;
@@ -492,7 +503,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
         }
         
         // nico multipleSelect
-        if(disabledPatches && e.button == 0){
+        if(disabledPatches && e.button == 0 && !gui->getOtherSelected()){
             multipleSelectFromX = e.x;
             multipleSelectFromY = e.y;
             multipleSelectRectangle.x = e.x;
@@ -508,8 +519,8 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
     ofVec3f mouse = ofVec3f(e.x, e.y,0);
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
     
-    // si el mouse esta siendo arrastrado y no hay un nodo abajo
-    if ( disabledPatches && !draggingGrip && !draggingHGrip && (!isAnyLinkHit()) ) {
+    // si el mouse esta siendo arrastrado y no hay un nodo/link/nodeInput abajo
+    if ( disabledPatches && !draggingGrip && !draggingHGrip && (!isAnyLinkHit()) && (!gui->getOtherSelected()) ) {
         // si apreto el boton izquierdo muevo todos los nodos
 //        if(e.button == 0){
 //            movePatches(mouse - mouseLast);
@@ -756,3 +767,10 @@ bool ofxComposer::isDraggingHGrip(){
 void ofxComposer::setDraggingHGrip(bool dragging){
     draggingHGrip = dragging;
 }
+
+
+//mili
+void ofxComposer::setMainCanvas(ofxUISuperCanvas* _gui) {
+    this->gui = _gui;
+}
+//
