@@ -41,6 +41,7 @@ public:
         }
     }
     
+    
     //mili
     void setMainCanvas(ofxUISuperCanvas* gui);
     //
@@ -72,6 +73,7 @@ protected:
     //mili
     ofxUISuperCanvas* gui;
     //
+    bool    bEditMode;
     
 private:
     void    closePatch( int &_nID );
@@ -109,7 +111,6 @@ private:
     int     selectedDot;
     int     selectedID;
     
-    bool    bEditMode;
     bool    bGLEditorPatch, bHelp;
     
     // nico scroll bar

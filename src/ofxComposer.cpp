@@ -659,11 +659,6 @@ int ofxComposer::isAnyPatchHit(float x, float y){
             break;
         }
     }
-    /*for(map<int,patch*>::iterator it = patches.begin(); (it != patches.end()) && isAnyHit == -1 ; it++ ){
-        if(it->second->isOver(*point)){
-            isAnyHit = it->first;
-        }
-    }*/
     delete point;
     return isAnyHit;
 }
