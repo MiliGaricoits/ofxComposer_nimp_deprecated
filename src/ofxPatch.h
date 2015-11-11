@@ -163,6 +163,10 @@ protected:
     
     //nico
     bool            linkHit;
+    
+    // nico snippets
+    bool            loadSnippetPatch(string snippetName, int relativeId, int previousPatchesSize);
+    bool            saveSnippetPatch(string snippetName, map<int, int> idMap, ofxXmlSettings xml);
 };
 
 #endif
