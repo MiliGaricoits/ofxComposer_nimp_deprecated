@@ -19,7 +19,7 @@
 #include "ofxGLEditor.h"
 #endif
 
-class ofxComposer {
+class ofxComposer : public ofNode {
 public:
     ofxComposer();
     

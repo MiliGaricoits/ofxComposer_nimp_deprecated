@@ -35,7 +35,7 @@ struct LinkDot{
     ofPolyline  path_line;
 };
 
-class ofxPatch{
+class ofxPatch : public ofNode {
 public:
     
     ofxPatch();
