@@ -75,6 +75,10 @@ protected:
     //
     bool    bEditMode;
     
+    // nico snippet
+    void loadSnippet(string snippetName);
+    bool saveSnippet(string snippetName);
+    
 private:
     void    closePatch( int &_nID );
     void    activePatch( int _nID );
