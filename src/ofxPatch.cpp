@@ -178,8 +178,9 @@ bool ofxPatch::isOver(ofPoint _pos){
     ofRectangle biggerBox = textureCorners.getBoundingBox();
     biggerBox.setFromCenter(biggerBox.getCenter().x, biggerBox.getCenter().y, biggerBox.width+20, biggerBox.height+20);
 
-    ofPoint transformedPos = _pos*this->getParent()->getLocalTransformMatrix();
+    ofPoint transformedPos = _pos*this->getGlobalTransformMatrix();
     return biggerBox.inside(transformedPos);
+//    return biggerBox.inside(_pos);
 };
 
 //---------------------------------------------------------------------- LOOPS

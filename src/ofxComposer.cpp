@@ -534,7 +534,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         
         // si apreto el boton derecho, hago zoom in/out
         if(e.button == 2){
-            scalePatches(mouse.y - mouseLast.y);
+//            scalePatches(mouse.y - mouseLast.y);
         }
     } else {
         int activePatch = isAnyPatchHit(mouse.x, mouse.y);
