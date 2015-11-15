@@ -328,7 +328,7 @@ void ofxComposer::draw(){
     //  Draw Patches
     //
     for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-        it->second->draw();
+        it->second->customDraw();
     }
     
     //  Draw active line

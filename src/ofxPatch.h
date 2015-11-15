@@ -71,7 +71,8 @@ public:
     void            rotate(float _angle);
 
     void            update();
-    void            draw();
+//    void            draw();
+    void            customDraw();
     
     bool            isOver(ofPoint _pos);//{ return textureCorners.inside(_pos); };
     
