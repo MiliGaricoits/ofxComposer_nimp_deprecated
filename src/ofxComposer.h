@@ -32,7 +32,7 @@ public:
     patch*  operator[](int _nID){ if ( (_nID != -1) && (patches[_nID] != NULL) ) return patches[_nID]; };
     
     void    update();
-    void    draw();
+    void    customDraw();
     
     void    setEdit(bool _state){
         bEditMode = _state;
@@ -89,7 +89,7 @@ private:
     static const float ZOOM_SENSITIVITY = .001f;
     bool    disabledPatches;
     // nico
-    int    isAnyPatchHit(float x, float y);
+    int    isAnyPatchHit(float x, float y, float z);
     //
     // mili align nodes
     int verticalAlign1, verticalAlign2, verticalAlign3, horizontalAlign1, horizontalAlign2, horizontalAlign3;

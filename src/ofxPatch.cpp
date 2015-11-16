@@ -176,11 +176,13 @@ ofTexture& ofxPatch::getTextureReference(){
 
 bool ofxPatch::isOver(ofPoint _pos){ 
     ofRectangle biggerBox = textureCorners.getBoundingBox();
-    biggerBox.setFromCenter(biggerBox.getCenter().x, biggerBox.getCenter().y, biggerBox.width+20, biggerBox.height+20);
+    biggerBox.setFromCenter(biggerBox.getCenter().x, biggerBox.getCenter().y, biggerBox.width+10, biggerBox.height+10);
+    //_pos = ((ofCamera*)this->getParent())->worldToScreen(ofVec3f(_pos.x, _pos.y, 600));
+    //ofPoint transformedPos = _pos*this->getGlobalTransformMatrix();
+    
 
-    ofPoint transformedPos = _pos*this->getGlobalTransformMatrix();
-    return biggerBox.inside(transformedPos);
-//    return biggerBox.inside(_pos);
+    //return biggerBox.inside(transformedPos);
+    return biggerBox.inside(_pos);
 };
 
 //---------------------------------------------------------------------- LOOPS
@@ -336,7 +338,10 @@ void ofxPatch::customDraw(){
                 ofVec3f pos = ofVec3f( maskCorners[i].x * width, maskCorners[i].y * height, 0.0);
                 pos = surfaceToScreenMatrix * pos;
                 
-                if ( (selectedMaskCorner == i) || ( ofDist(ofGetMouseX(), ofGetMouseY(), pos.x, pos.y) <= 4 ) ) {
+                //mili
+                ofVec3f mouse = ofVec3f(ofGetMouseX(), ofGetMouseY(), 0.0)*this->getGlobalTransformMatrix();
+                //
+                if ( (selectedMaskCorner == i) || ( ofDist(mouse.x, mouse.y, pos.x, pos.y) <= 4 ) ) {
                     ofSetColor(255,255);
                     ofCircle( pos, 4);
                     ofSetColor(255,100);
@@ -703,14 +708,14 @@ void ofxPatch::_reMakeFrame( int &_nId ){
 }
 
 void ofxPatch::_mousePressed(ofMouseEventArgs &e){
-    ofVec3f mouse = ofVec3f(e.x, e.y, 0.0);
+    ofVec3f mouse_transformed = ofVec3f(e.x, e.y, 0.0)*this->getGlobalTransformMatrix();
     
     if (bEditMode && bActive ){
         if (!bEditMask){
             // Editing the texture corners
             //
             for(int i = 0; i < 4; i++){
-                if ( ofDist(e.x, e.y, textureCorners[i].x, textureCorners[i].y) <= 10 )
+                if ( ofDist(mouse_transformed.x, mouse_transformed.y, textureCorners[i].x, textureCorners[i].y) <= 10 )
                     selectedTextureCorner = i;
             }
         } else {
@@ -719,8 +724,9 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
             bool overDot = false;
             for(int i = 0; i < maskCorners.size(); i++){
                 ofVec3f pos = getSurfaceToScreen( ofPoint(maskCorners[i].x * width, maskCorners[i].y * height));
+                //pos = pos*this->getGlobalTransformMatrix();
                 
-                if ( ofDist(e.x, e.y, pos.x, pos.y) <= 10 ){
+                if ( ofDist(mouse_transformed.x, mouse_transformed.y, pos.x, pos.y) <= 10 ){
                     selectedMaskCorner = i;
                     overDot = true;
                 }
@@ -730,9 +736,9 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
             //
             if (!overDot){
                 doScreenToSurfaceMatrix();
-                mouse = screenToSurfaceMatrix * mouse;
-                mouse.x = mouse.x / width;
-                mouse.y = mouse.y / height;
+                mouse_transformed = screenToSurfaceMatrix * mouse_transformed;
+                mouse_transformed.x = mouse_transformed.x / width;
+                mouse_transformed.y = mouse_transformed.y / height;
                 
                 int addNew = -1;
                 
@@ -741,7 +747,7 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
                 for (int i = 0; i < maskCorners.size(); i++){
                     int next = (i+1)%maskCorners.size();
                     
-                    ofVec2f AtoM = mouse - maskCorners[i];
+                    ofVec2f AtoM = mouse_transformed - maskCorners[i];
                     ofVec2f AtoB = maskCorners[next] - maskCorners[i];
                     
                     float a = atan2f(AtoM.x, AtoM.y);
@@ -753,7 +759,7 @@ void ofxPatch::_mousePressed(ofMouseEventArgs &e){
                 }
                 
                 if (addNew >= 0 ){
-                    maskCorners.getVertices().insert( maskCorners.getVertices().begin()+addNew, mouse);
+                    maskCorners.getVertices().insert( maskCorners.getVertices().begin()+addNew, mouse_transformed);
                     selectedMaskCorner = addNew;
                 }
                 
@@ -771,6 +777,7 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
     
     ofVec3f mouse = ofVec3f(e.x, e.y,0);
     ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
+    ofVec3f mouse_transformed = ofVec3f(ofGetMouseX(), ofGetMouseY(), 0.0)*this->getGlobalTransformMatrix();
     
     if (bEditMode){
         if (!bEditMask){
@@ -781,8 +788,8 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 if (e.button == 2){
                     // Deformation
                     //
-                    textureCorners[selectedTextureCorner].x = ofGetMouseX();
-                    textureCorners[selectedTextureCorner].y = ofGetMouseY();
+                    textureCorners[selectedTextureCorner].x = mouse_transformed.x;
+                    textureCorners[selectedTextureCorner].y = mouse_transformed.y;
                     
                     bUpdateCoord = true;
                     
@@ -851,10 +858,10 @@ void ofxPatch::_mouseDragged(ofMouseEventArgs &e){
                 pos = surfaceToScreenMatrix * pos;
                 
                 if ((selectedMaskCorner >= 0) && (selectedMaskCorner < maskCorners.size() )){
-                    ofVec3f newPos = ofVec3f(mouse.x, mouse.y, 0.0);
+                    ofVec3f newPos = ofVec3f(mouse_transformed.x, mouse_transformed.y, 0.0);
                     doScreenToSurfaceMatrix();
                     
-                    newPos = screenToSurfaceMatrix * mouse;
+                    newPos = screenToSurfaceMatrix * mouse_transformed;
                     newPos.x = ofClamp(newPos.x / width, 0.0, 1.0);
                     newPos.y = ofClamp(newPos.y / height, 0.0, 1.0);
                     

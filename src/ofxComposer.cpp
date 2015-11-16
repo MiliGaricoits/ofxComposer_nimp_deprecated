@@ -305,7 +305,7 @@ void ofxComposer::update(){
 }
 
 
-void ofxComposer::draw(){
+void ofxComposer::customDraw(){
     ofPushView();
     ofPushStyle();
     ofPushMatrix();
@@ -333,8 +333,11 @@ void ofxComposer::draw(){
     
     //  Draw active line
     //
+    //mili
+    ofVec3f mouse_transformed = ofVec3f(ofGetMouseX(), ofGetMouseY(), 0.0)*this->getGlobalTransformMatrix();
+    //
     if (selectedDot >= 0){
-        ofLine(patches[selectedDot]->getOutPutPosition(), ofPoint(ofGetMouseX(),ofGetMouseY()));
+        ofLine(patches[selectedDot]->getOutPutPosition(), ofPoint(mouse_transformed.x,mouse_transformed.y));
     }
     
     //mili - nodes aligned
@@ -458,12 +461,13 @@ void ofxComposer::activePatch( int _nID ){
 }
 
 void ofxComposer::_mousePressed(ofMouseEventArgs &e){
-    ofVec2f mouse = ofVec2f(e.x, e.y);
+    ofVec3f mouse = ofVec3f(e.x, e.y, 0.0);
+    ofVec3f mouse_transformed = mouse*this->getGlobalTransformMatrix();
     
     // si no estoy clickeando sobre ninguna de las 2 scrollbars, veo que hago
     // si estoy clickeando una de las scrollbars, no tengo que hacer nada aca
     if(!draggingGrip && !draggingHGrip) {
-        int idPatchHit = isAnyPatchHit(e.x, e.y);
+        int idPatchHit = isAnyPatchHit(mouse_transformed.x, mouse_transformed.y, mouse_transformed.z);
         // nico zoom/drag
         if(idPatchHit == -1){
             disabledPatches = true;
@@ -480,7 +484,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
         
         selectedDot = -1;
         for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
-            if ( (it->second->getOutPutPosition().distance(mouse) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
+            if ( (it->second->getOutPutPosition().distance(ofPoint(mouse_transformed.x, mouse_transformed.y)) < 5) && (it->second->bEditMode) && !(it->second->bEditMask) ){
                 selectedDot = it->first;
                 it->second->bActive = false;
                 selectedID = -1;
@@ -504,10 +508,10 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
         
         // nico multipleSelect
         if(disabledPatches && e.button == 0 && !gui->getOtherSelected()){
-            multipleSelectFromX = e.x;
-            multipleSelectFromY = e.y;
-            multipleSelectRectangle.x = e.x;
-            multipleSelectRectangle.y = e.y;
+            multipleSelectFromX = mouse_transformed.x;
+            multipleSelectFromY = mouse_transformed.y;
+            multipleSelectRectangle.x = mouse_transformed.x;
+            multipleSelectRectangle.y = mouse_transformed.y;
         }
     }
     
@@ -516,8 +520,10 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
 
 // Nico ZOOM & DRAG
 void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
-    ofVec3f mouse = ofVec3f(e.x, e.y,0);
-    ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
+    //ofVec3f mouse = ofVec3f(e.x, e.y,0);
+    //ofVec3f mouseLast = ofVec3f(ofGetPreviousMouseX(),ofGetPreviousMouseY(),0);
+    
+    ofVec3f mouse = ofVec3f(e.x, e.y, 0.0)*this->getGlobalTransformMatrix();
     
     // si el mouse esta siendo arrastrado y no hay un nodo/link/nodeInput abajo
     if ( disabledPatches && !draggingGrip && !draggingHGrip && (!isAnyLinkHit()) && (!gui->getOtherSelected()) ) {
@@ -528,8 +534,8 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
         
         // si es el boton izquierdo hago multiple selection
         if(e.button == 0){
-            multipleSelectRectangle.width = e.x - multipleSelectFromX;
-            multipleSelectRectangle.height = e.y - multipleSelectFromY;
+            multipleSelectRectangle.width = mouse.x - multipleSelectFromX;
+            multipleSelectRectangle.height = mouse.y - multipleSelectFromY;
         }
         
         // si apreto el boton derecho, hago zoom in/out
@@ -537,7 +543,7 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
 //            scalePatches(mouse.y - mouseLast.y);
         }
     } else {
-        int activePatch = isAnyPatchHit(mouse.x, mouse.y);
+        int activePatch = isAnyPatchHit(mouse.x, mouse.y, mouse.z);
         if (activePatch != -1) {
         
             patch* p = patches[activePatch];
@@ -581,7 +587,8 @@ void ofxComposer::_mouseDragged(ofMouseEventArgs &e){
 }
 
 void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
-    ofVec2f mouse = ofVec2f(e.x, e.y);
+    ofVec3f mouse = ofVec3f(e.x, e.y, 0.0);
+    ofVec3f mouse_translate = mouse*this->getGlobalTransformMatrix();
     
     if (selectedDot != -1){
         for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
@@ -595,7 +602,7 @@ void ofxComposer::_mouseReleased(ofMouseEventArgs &e){
                     // And after checking in each dot of each shader...
                     // ... fin the one where the mouse it´s over
                     //
-                    if ( it->second->inPut[j].pos.distance(mouse) < 5){
+                    if ( it->second->inPut[j].pos.distance(ofPoint(mouse_translate.x, mouse_translate.y)) < 5){
                         
                         // Once he founds it
                         // make the link and forget the selection
@@ -650,8 +657,8 @@ void ofxComposer::_windowResized(ofResizeEventArgs &e){
 
 
 // Nico Zoom
-int ofxComposer::isAnyPatchHit(float x, float y){
-    ofPoint *point = new ofPoint(x,y);
+int ofxComposer::isAnyPatchHit(float x, float y, float z){
+    ofPoint *point = new ofPoint(x,y,z);
     int isAnyHit = -1;
     for(map<int,patch*>::reverse_iterator rit = patches.rbegin(); rit != patches.rend(); rit++ ){
         if (rit->second->isOver(*point)){
