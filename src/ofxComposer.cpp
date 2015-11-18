@@ -341,29 +341,30 @@ void ofxComposer::customDraw(){
     }
     
     //mili - nodes aligned
+    ofVec3f scale = ((ofCamera*)this->getParent())->getScale();
     if (verticalAlign1) {
         ofSetColor(255, 208, 111);
-        ofLine(verticalAlign1, 0, verticalAlign1, ofGetHeight());
+        ofLine(verticalAlign1, 0, verticalAlign1, ofGetHeight()*scale.y);
     }
     if (verticalAlign2) {
         ofSetColor(255, 208, 111);
-        ofLine(verticalAlign2, 0, verticalAlign2, ofGetHeight());
+        ofLine(verticalAlign2, 0, verticalAlign2, ofGetHeight()*scale.y);
     }
     if (verticalAlign3) {
         ofSetColor(255, 208, 111);
-        ofLine(verticalAlign3, 0, verticalAlign3, ofGetHeight());
+        ofLine(verticalAlign3, 0, verticalAlign3, ofGetHeight()*scale.y);
     }
     if (horizontalAlign1) {
         ofSetColor(255, 208, 111);
-        ofLine(0, horizontalAlign1, ofGetWidth(), horizontalAlign1);
+        ofLine(0, horizontalAlign1, ofGetWidth()*scale.x, horizontalAlign1);
     }
     if (horizontalAlign2) {
         ofSetColor(255, 208, 111);
-        ofLine(0, horizontalAlign2, ofGetWidth(), horizontalAlign2);
+        ofLine(0, horizontalAlign2, ofGetWidth()*scale.x, horizontalAlign2);
     }
     if (horizontalAlign3) {
         ofSetColor(255, 208, 111);
-        ofLine(0, horizontalAlign3, ofGetWidth(), horizontalAlign3);
+        ofLine(0, horizontalAlign3, ofGetWidth()*scale.x, horizontalAlign3);
     }
     //
         
