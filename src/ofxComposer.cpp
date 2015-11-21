@@ -34,11 +34,14 @@ string helpScreen = "\n \
             or \n \
       Right Drag + A:       centered proportional scale\n \
     - Right Button Drag:    coorner transformation\n ";
-    
-ofxComposer::ofxComposer(){
+
+ofxComposer::ofxComposer(){};
+
+ofxComposer::ofxComposer(int patchEventPriority){
     
     //  Event listeners
     //  defined in derived class
+    PATCH_EVENT_PRIORITY = patchEventPriority;
     
 #ifdef USE_OFXGLEDITOR       
     editor.setup("menlo.ttf");
@@ -74,7 +77,7 @@ ofxComposer::ofxComposer(){
     multipleSelectFromY = 0;
 }
 
-void ofxComposer::load(string _fileConfig){
+void ofxComposer::load(int patchEventPriority, string _fileConfig){
     if (_fileConfig != "default")
         configFile = _fileConfig;
     
@@ -91,7 +94,7 @@ void ofxComposer::load(string _fileConfig){
         // Load each surface present on the xml file
         //
         for(int i = 0; i < totalPatchs ; i++){
-            patch *nPatch = new patch();
+            patch *nPatch = new patch(patchEventPriority);
             bool loaded = nPatch->loadSettings(i, "config.xml");
             
             if (loaded){
@@ -162,7 +165,7 @@ void ofxComposer::save(string _fileConfig ){
 bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
     bool loaded = false;
     
-    patch *nPatch = new patch();
+    patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
     loaded = nPatch->loadFile( _filePath, "config.xml" );
     
     if ( loaded ){
@@ -183,7 +186,7 @@ bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
 bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
     bool loaded = false;
     
-    patch *nPatch = new patch();
+    patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
     loaded = nPatch->loadType( _type, "config.xml" );
     
     if ( loaded ){
