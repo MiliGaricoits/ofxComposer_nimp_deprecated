@@ -689,13 +689,13 @@ void ofxComposer::scalePatches(float yDiff){
 
 //nico scrollbar begin
 int ofxComposer::getPatchesLowestCoord(){
-    int coordMasBaja = 1000;
+    int coordMasBaja = 10000;
     for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasBaja > it->second->getLowestYCoord()){
             coordMasBaja = it->second->getLowestYCoord();
         }
     }
-    return coordMasBaja - 30;
+    return coordMasBaja;
 }
 int ofxComposer::getPatchesHighestCoord(){
     int coordMasAlta = -1;
@@ -708,13 +708,13 @@ int ofxComposer::getPatchesHighestCoord(){
 }
 
 int ofxComposer::getPatchesLeftMostCoord(){
-    int coordMasIzq = 1000;
+    int coordMasIzq = 10000;
     for(map<int,patch*>::iterator it = patches.begin(); it != patches.end(); it++ ){
         if(coordMasIzq > it->second->getLowestXCoord()){
             coordMasIzq = it->second->getLowestXCoord();
         }
     }
-    return coordMasIzq - 30;
+    return coordMasIzq;
 }
 int ofxComposer::getPatchesRightMostCoord(){
     int coordMasDer = -1;
