@@ -177,6 +177,7 @@ bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
         
         //mili
         nPatch->setMainCanvas(this->gui);
+        nPatch->setParent(*this->getParent());
         //
     }
     
@@ -203,8 +204,10 @@ bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
 #endif
         
         patches[nPatch->getId()] = nPatch;
+        
         //mili
         nPatch->setMainCanvas(this->gui);
+        nPatch->setParent(*this->getParent());
         //
     }
     
