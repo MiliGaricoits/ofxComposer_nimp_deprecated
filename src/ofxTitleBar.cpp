@@ -69,11 +69,13 @@ void ofxTitleBar::draw(){
 
 void ofxTitleBar::_mousePressed(ofMouseEventArgs &e){
     ofPoint mouse = ofPoint(e.x, e.y);
-    if ( tittleBox.inside(mouse)){
+    ofVec3f mouse_transformed = mouse*this->getGlobalTransformMatrix();
+    
+    if ( tittleBox.inside(mouse_transformed)){
         bool hit = false;
         for (int i = 0; i < buttons.size(); i++){
-            if (((mouse.x - tittleBox.x - offSetWidth) > i * letterWidth ) &&
-                ((mouse.x - tittleBox.x - offSetWidth) < (i+1) * letterWidth ) ){
+            if (((mouse_transformed.x - tittleBox.x - offSetWidth) > i * letterWidth ) &&
+                ((mouse_transformed.x - tittleBox.x - offSetWidth) < (i+1) * letterWidth ) ){
                 if ( i == 0){
                     ofNotifyEvent(close, *windowsId);
                     hit = true;
@@ -93,7 +95,8 @@ void ofxTitleBar::_mousePressed(ofMouseEventArgs &e){
 
 void ofxTitleBar::_mouseReleased(ofMouseEventArgs &e){
     ofPoint mouse = ofPoint(e.x, e.y);
-    if ( tittleBox.inside(mouse)){
+    ofVec3f mouse_transformed = mouse*this->getGlobalTransformMatrix();
+    if ( tittleBox.inside(mouse_transformed)){
         ofNotifyEvent(drag, *windowsId);
     }
 }
