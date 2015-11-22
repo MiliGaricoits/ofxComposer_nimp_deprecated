@@ -22,7 +22,7 @@ struct ofxTitleBarButton{
     ButtonType type;
 };
 
-class ofxTitleBar {
+class ofxTitleBar : public ofNode {
 public:
     
     ofxTitleBar( ofRectangle* wBox, int* _windowsId );

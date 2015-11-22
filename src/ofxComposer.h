@@ -61,6 +61,10 @@ public:
     bool    isDraggingHGrip();
     void    deactivateAllPatches();
     
+    // snippet
+    void loadSnippet();
+    bool saveSnippet();
+    
 protected:
     // Events
     void    _mouseMoved(ofMouseEventArgs &e);
@@ -76,8 +80,6 @@ protected:
     bool    bEditMode;
     
     // nico snippet
-    void loadSnippet();
-    bool saveSnippet();
     int  getMaxIdPatch();
     
 private:
