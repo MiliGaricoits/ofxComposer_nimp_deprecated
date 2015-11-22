@@ -76,8 +76,9 @@ protected:
     bool    bEditMode;
     
     // nico snippet
-    void loadSnippet(string snippetName);
-    bool saveSnippet(string snippetName);
+    void loadSnippet();
+    bool saveSnippet();
+    int  getMaxIdPatch();
     
 private:
     void    closePatch( int &_nID );
