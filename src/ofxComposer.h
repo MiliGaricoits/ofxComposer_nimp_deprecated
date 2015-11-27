@@ -11,6 +11,7 @@
 
 #include "ofMain.h"
 #include "patch.h"
+#include "enumerations.h"
 
 //  Comment the "define USE_OFXGLEDITOR" if you don't want to use ofxGLEditor
 //
@@ -22,10 +23,9 @@
 class ofxComposer : public ofNode {
 public:
     ofxComposer();
-    ofxComposer(int patchEventPriority);
     
     void    save(string _fileConfig = "default");
-    void    load(int patchEventPriority = OF_EVENT_ORDER_AFTER_APP, string _fileConfig = "default");
+    void    load(string _fileConfig = "default");
     bool    addPatchFromFile(string _filePath, ofPoint _position);
     bool    addPatchWithOutFile(string _type, ofPoint _position);
     
@@ -124,8 +124,6 @@ private:
     bool draggingGrip;
     bool draggingHGrip;
     // nico scroll bar fin
-    
-    int PATCH_EVENT_PRIORITY;
     
 };
 

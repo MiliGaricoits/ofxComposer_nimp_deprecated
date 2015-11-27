@@ -35,13 +35,7 @@ string helpScreen = "\n \
       Right Drag + A:       centered proportional scale\n \
     - Right Button Drag:    coorner transformation\n ";
 
-ofxComposer::ofxComposer(){};
-
-ofxComposer::ofxComposer(int patchEventPriority){
-    
-    //  Event listeners
-    //  defined in derived class
-    PATCH_EVENT_PRIORITY = patchEventPriority;
+ofxComposer::ofxComposer(){
     
 #ifdef USE_OFXGLEDITOR       
     editor.setup("menlo.ttf");
@@ -77,7 +71,7 @@ ofxComposer::ofxComposer(int patchEventPriority){
     multipleSelectFromY = 0;
 }
 
-void ofxComposer::load(int patchEventPriority, string _fileConfig){
+void ofxComposer::load(string _fileConfig){
     if (_fileConfig != "default")
         configFile = _fileConfig;
     
@@ -94,7 +88,7 @@ void ofxComposer::load(int patchEventPriority, string _fileConfig){
         // Load each surface present on the xml file
         //
         for(int i = 0; i < totalPatchs ; i++){
-            patch *nPatch = new patch(patchEventPriority);
+            patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
             bool loaded = nPatch->loadSettings(i, "config.xml");
             
             if (loaded){
@@ -229,6 +223,8 @@ bool ofxComposer::connect( int _fromID, int _toID, int nTexture ){
         newDot.nTex = nTexture;
         
         patches[ _fromID ]->outPut.push_back( newDot );
+        
+        //patches[_toID]->resetSize(patches[ _fromID ]->getWidth(), patches[ _fromID ]->getHeight());
         connected = true;
     }
     
@@ -473,7 +469,7 @@ void ofxComposer::_mousePressed(ofMouseEventArgs &e){
     
     // si no estoy clickeando sobre ninguna de las 2 scrollbars, veo que hago
     // si estoy clickeando una de las scrollbars, no tengo que hacer nada aca
-    if(!draggingGrip && !draggingHGrip) {
+    if(!draggingGrip && !draggingHGrip && !gui->getOtherSelected()) {
         int idPatchHit = isAnyPatchHit(mouse_transformed.x, mouse_transformed.y, mouse_transformed.z);
         // nico zoom/drag
         if(idPatchHit == -1){
