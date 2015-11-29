@@ -110,6 +110,7 @@ void ofxComposer::load(string _fileConfig){
                 
                 //mili
                 nPatch->setMainCanvas(this->gui);
+                nPatch->setParent(*this->getParent());
                 //
             }
         }
