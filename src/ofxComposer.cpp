@@ -88,7 +88,7 @@ void ofxComposer::load(string _fileConfig){
         // Load each surface present on the xml file
         //
         for(int i = 0; i < totalPatchs ; i++){
-            patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
+            patch *nPatch = new patch();
             bool loaded = nPatch->loadSettings(i, "config.xml");
             
             if (loaded){
@@ -160,7 +160,7 @@ void ofxComposer::save(string _fileConfig ){
 bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
     bool loaded = false;
     
-    patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
+    patch *nPatch = new patch();
     loaded = nPatch->loadFile( _filePath, "config.xml" );
     
     if ( loaded ){
@@ -182,14 +182,12 @@ bool ofxComposer::addPatchFromFile(string _filePath, ofPoint _position){
 bool ofxComposer::addPatchWithOutFile(string _type, ofPoint _position){
     bool loaded = false;
     
-    patch *nPatch = new patch(PATCH_EVENT_PRIORITY);
+    patch *nPatch = new patch();
     loaded = nPatch->loadType( _type, "config.xml" );
     
     if ( loaded ){
-        //mili (scale antes de move)
         nPatch->scale(0.5);
         nPatch->move( _position );
-        //
         nPatch->saveSettings();
         ofAddListener( nPatch->title->close , this, &ofxComposer::closePatch);
 #ifdef USE_OFXGLEDITOR

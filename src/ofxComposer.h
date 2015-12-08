@@ -45,6 +45,7 @@ public:
     
     //mili
     void setMainCanvas(ofxUISuperCanvas* gui);
+    void addPatch(patch* p);
     //
     
     map<int,patch*>  patches;

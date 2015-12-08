@@ -177,11 +177,7 @@ ofTexture& ofxPatch::getTextureReference(){
 bool ofxPatch::isOver(ofPoint _pos){ 
     ofRectangle biggerBox = textureCorners.getBoundingBox();
     biggerBox.setFromCenter(biggerBox.getCenter().x, biggerBox.getCenter().y, biggerBox.width+10, biggerBox.height+10);
-    //_pos = ((ofCamera*)this->getParent())->worldToScreen(ofVec3f(_pos.x, _pos.y, 600));
-    //ofPoint transformedPos = _pos*this->getGlobalTransformMatrix();
-    
 
-    //return biggerBox.inside(transformedPos);
     return biggerBox.inside(_pos);
 };
 

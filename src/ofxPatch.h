@@ -16,7 +16,7 @@
 #include "ofxTitleBar.h"
 #include "ofxShaderObj.h"
 #include "ofxPingPong.h"
-#include "nodeVideoInterface.h"
+//#include "nodeVideoInterface.h"
 #include "enumerations.h"
 
 struct LinkDot{
